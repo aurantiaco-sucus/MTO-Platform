@@ -11,12 +11,14 @@ classdef Individual
 %% Individual Base Class
 
 properties
-    Dec double % Decision variables (1xD)
-    Obj double % Objective values (1xM)
-    Con double % Constraint values (1xC)
-    CV double % Constraint violation (1x1)
+    Dec % Decision variables (1xD)
+    Obj % Objective values (1xM)
+    Con % Constraint values (1xC)
+    CV % Constraint violation (1x1)
 end
 
+% Invoke these accessors in function form for populations, e.g. Decs(population).
+% Octave dot-notation method dispatch on an object array only uses its first element.
 methods
     function value = Decs(obj)
         % Return matrix of Decision variables (NxD)

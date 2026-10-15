@@ -89,7 +89,7 @@ methods (Access = protected)
         old=before.context.OldFitness;
         if isempty(s.initFitness)
             s.initFitness=current;
-            cv=sort(s.batch.CVs); s.cvMax=cv(max(1,round(.2*numel(cv))));
+            cv=sort(CVs(s.batch)); s.cvMax=cv(max(1,round(.2*numel(cv))));
             fit=0;
         else
             if current(1)<=0, j=2; else, j=1; end

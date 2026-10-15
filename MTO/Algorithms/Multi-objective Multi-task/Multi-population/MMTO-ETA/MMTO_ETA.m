@@ -198,7 +198,7 @@ methods
     end
 
     function [Model, partition] = LPCA(Algo, P, M, K)
-        PopDec = P.Decs;
+        PopDec = Decs(P);
         [N, D] = size(PopDec);
         Model = struct('mean', num2cell(PopDec(1:K, :), 2), ... % The mean of the model
             'eMean', num2cell(PopDec(1:K, :), 2), ...

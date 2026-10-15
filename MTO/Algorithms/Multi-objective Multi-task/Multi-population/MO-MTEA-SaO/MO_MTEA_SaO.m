@@ -75,7 +75,7 @@ methods
             fail_iter = zeros(Prob.T, STNum);
             for t = 1:Prob.T
                 parent = population{t};
-                median_Obj{t} = median(parent.Objs); median_CV(t) = median(parent.CVs);
+                median_Obj{t} = median(Objs(parent)); median_CV(t) = median(CVs(parent));
 
                 % Knowledge Transfer, only use for generate child
                 if Algo.TNum > 0 && mod(Algo.Gen - 1, Algo.SaGap) + 1 < (Algo.SaGap - Algo.Memory) && mod(Algo.Gen, Algo.TGap) == 0
@@ -107,10 +107,10 @@ methods
                             population{t}(STIdx) = Selection_SPEA2(pop_temp, length(STIdx));
                     end
 
-                    succ_iter(t, st) = sum(population{t}(STIdx).CVs < median_CV(t) | ...
-                        (population{t}(STIdx).CVs == median_CV(t) & any(population{t}(STIdx).Objs < median_Obj{t})), 'all');
-                    fail_iter(t, st) = sum(population{t}(STIdx).CVs > median_CV(t) | ...
-                        (population{t}(STIdx).CVs == median_CV(t) & all(population{t}(STIdx).Objs > median_Obj{t})), 'all');
+                    succ_iter(t, st) = sum(CVs(population{t}(STIdx)) < median_CV(t) | ...
+                        (CVs(population{t}(STIdx)) == median_CV(t) & any(Objs(population{t}(STIdx)) < median_Obj{t})), 'all');
+                    fail_iter(t, st) = sum(CVs(population{t}(STIdx)) > median_CV(t) | ...
+                        (CVs(population{t}(STIdx)) == median_CV(t) & all(Objs(population{t}(STIdx)) > median_Obj{t})), 'all');
                 end
             end
 

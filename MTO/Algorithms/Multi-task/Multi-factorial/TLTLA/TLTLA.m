@@ -49,7 +49,7 @@ methods
             % Generation
             offspring = Algo.Generation(population);
             % Evaluation
-            offspring_temp = Individual_MF.empty();
+            offspring_temp = repmat(Individual_MF(), 0, 0);
             for t = 1:Prob.T
                 offspring_t = offspring([offspring.MFFactor] == t);
                 offspring_t = Algo.Evaluation(offspring_t, Prob, t);
@@ -92,7 +92,7 @@ methods
                     tmp_population.Dec(d) = child_Dec(d);
                     tmp_population = Algo.Evaluation(tmp_population, Prob, t);
                     TMP = [tmp_population, population(parent)];
-                    [~, ~, idx] = min_FP(TMP.Objs, TMP.CVs);
+                    [~, ~, idx] = min_FP(Objs(TMP), CVs(TMP));
                     if idx == 1
                         population(parent) = tmp_population;
                         break;

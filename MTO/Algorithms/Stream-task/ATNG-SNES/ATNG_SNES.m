@@ -107,8 +107,8 @@ methods (Access = protected)
         weights = zeros(1, p.N); weights(order) = a.Shared.Shape;
         if s.probe
             virtual = s.batch(p.N + 1:end);
-            fit = 1e8 * mean(sample.CVs) + mean(sample.Objs);
-            vfit = 1e8 * mean(virtual.CVs) + mean(virtual.Objs);
+            fit = 1e8 * mean(CVs(sample)) + mean(Objs(sample));
+            vfit = 1e8 * mean(CVs(virtual)) + mean(Objs(virtual));
             if vfit > fit
                 s.rho = 2/3 * s.rho; s.alpha = 2/3 * s.alpha;
             else

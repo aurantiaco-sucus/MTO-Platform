@@ -45,7 +45,7 @@ methods
 
         while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
-                centroid{t} = mean(population{t}.Decs, 1);
+                centroid{t} = mean(Decs(population{t}), 1);
             end
             for t = 1:Prob.T
                 % Source task selection
@@ -67,7 +67,7 @@ methods
     end
 
     function offspring = Generation(Algo, population, spop, ct, cs)
-        popf_dec = [population.Decs; spop.Decs - cs + ct];
+        popf_dec = [Decs(population); Decs(spop) - cs + ct];
         for i = 1:length(population)
             offspring(i) = population(i);
             x1 = randi(length(population));

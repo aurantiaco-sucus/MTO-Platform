@@ -97,8 +97,8 @@ methods (Access = protected)
         if rand < Algo.TRP && ~isempty(donors)
             donors = donors(randperm(numel(donors), min(numel(donors), 10)));
             history = [];
-            for k = donors, history = [history; Algo.Population{k}.Decs]; end
-            z = Algo.learn_anomaly_detection(batch.Decs, history, Algo.Shared.Epsilon(t));
+            for k = donors, history = [history; Decs(Algo.Population{k})]; end
+            z = Algo.learn_anomaly_detection(Decs(batch), history, Algo.Shared.Epsilon(t));
             context.Transfer = size(z, 1);
             for i = 1:size(z, 1)
                 c = Individual(); c.Dec = max(0, min(1, z(i, :))); batch(end + 1) = c;

@@ -50,7 +50,7 @@ methods
         n = numel(population);
         order = randperm(n);
         offspring = population(order);
-        parentDec = offspring.Decs;
+        parentDec = Decs(offspring);
 
         % All ready populations have the same size N, so sampling a task and
         % then an individual is equivalent to uniform sampling from the old
@@ -61,7 +61,7 @@ methods
             positions = find(sources == source);
             sourcePopulation = Algo.Population{source};
             selected = randi(numel(sourcePopulation), 1, numel(positions));
-            partnerDec(positions, :) = sourcePopulation(selected).Decs;
+            partnerDec(positions, :) = Decs(sourcePopulation(selected));
         end
 
         crossover = sources == target | rand(1, n) < Algo.RMP;
@@ -131,7 +131,7 @@ methods (Access = protected)
     function acceptBatch(Algo, Prob, t, batch)
         batch = Algo.setFactorData(batch, t, Prob.T);
         pool = [Algo.Population{t}, batch];
-        [~, rank] = sortrows([pool.CVs, pool.Objs]);
+        [~, rank] = sortrows([CVs(pool), Objs(pool)]);
         Algo.Population{t} = pool(rank(1:min(Prob.N, numel(pool))));
     end
 end

@@ -66,7 +66,7 @@ methods
 
             population{t} = Initialization_One(Algo, Prob, t, Individual, N{t});
 
-            Z{t} = min(population{t}.Objs, [], 1);
+            Z{t} = min(Objs(population{t}), [], 1);
             if N{t} < Prob.N % Fill population
                 population{t}(N{t} + 1:Prob.N) = population{t}(1:Prob.N - N{t});
             end
@@ -89,28 +89,28 @@ methods
                         case 1
                             % PBI approach
                             normW = sqrt(sum(W{t}(P, :).^2, 2));
-                            normP = sqrt(sum((population{t}(P).Objs - repmat(Z{t}, DT{t}, 1)).^2, 2));
+                            normP = sqrt(sum((Objs(population{t}(P)) - repmat(Z{t}, DT{t}, 1)).^2, 2));
                             normO = sqrt(sum((offspring.Obj - Z{t}).^2, 2));
-                            CosineP = sum((population{t}(P).Objs - repmat(Z{t}, DT{t}, 1)) .* W{t}(P, :), 2) ./ normW ./ normP;
+                            CosineP = sum((Objs(population{t}(P)) - repmat(Z{t}, DT{t}, 1)) .* W{t}(P, :), 2) ./ normW ./ normP;
                             CosineO = sum(repmat(offspring.Obj - Z{t}, DT{t}, 1) .* W{t}(P, :), 2) ./ normW ./ normO;
                             g_old = normP .* CosineP + 5 * normP .* sqrt(1 - CosineP.^2);
                             g_new = normO .* CosineO + 5 * normO .* sqrt(1 - CosineO.^2);
                         case 2
                             % Tchebycheff approach
-                            g_old = max(abs(population{t}(P).Objs - repmat(Z{t}, DT{t}, 1)) .* W{t}(P, :), [], 2);
+                            g_old = max(abs(Objs(population{t}(P)) - repmat(Z{t}, DT{t}, 1)) .* W{t}(P, :), [], 2);
                             g_new = max(repmat(abs(offspring.Obj - Z{t}), DT{t}, 1) .* W{t}(P, :), [], 2);
                         case 3
                             % Tchebycheff approach with normalization
-                            Zmax = max(population{t}.Objs, [], 1);
-                            g_old = max(abs(population{t}(P).Objs - repmat(Z{t}, DT{t}, 1)) ./ repmat(Zmax - Z{t}, DT{t}, 1) .* W{t}(P, :), [], 2);
+                            Zmax = max(Objs(population{t}), [], 1);
+                            g_old = max(abs(Objs(population{t}(P)) - repmat(Z{t}, DT{t}, 1)) ./ repmat(Zmax - Z{t}, DT{t}, 1) .* W{t}(P, :), [], 2);
                             g_new = max(repmat(abs(offspring.Obj - Z{t}) ./ (Zmax - Z{t}), DT{t}, 1) .* W{t}(P, :), [], 2);
                         case 4
                             % Modified Tchebycheff approach
-                            g_old = max(abs(population{t}(P).Objs - repmat(Z{t}, DT{t}, 1)) ./ W{t}(P, :), [], 2);
+                            g_old = max(abs(Objs(population{t}(P)) - repmat(Z{t}, DT{t}, 1)) ./ W{t}(P, :), [], 2);
                             g_new = max(repmat(abs(offspring.Obj - Z{t}), DT{t}, 1) ./ W{t}(P, :), [], 2);
                     end
                     CVO = offspring.CV;
-                    CVP = population{t}(P).CVs;
+                    CVP = CVs(population{t}(P));
                     population{t}(P(g_old >= g_new & CVP == CVO | CVP > CVO)) = offspring;
                 end
                 if N{t} < Prob.N % Fill population

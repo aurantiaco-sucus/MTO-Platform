@@ -52,7 +52,7 @@ methods
     function run(Algo, Prob)
         population = Initialization(Algo, Prob, Individual);
         for t = 1:Prob.T
-            FrontNo{t} = NDSort(population{t}.Objs, inf);
+            FrontNo{t} = NDSort(Objs(population{t}), inf);
         end
 
         while Algo.notTerminated(Prob, population)
@@ -80,9 +80,9 @@ methods
         % Delete one solution from the population
 
         % Identify the solutions in the last front
-        FrontNo = Algo.UpdateFront(population.Objs, FrontNo);
+        FrontNo = Algo.UpdateFront(Objs(population), FrontNo);
         LastFront = find(FrontNo == max(FrontNo));
-        PopObj = population(LastFront).Objs;
+        PopObj = Objs(population(LastFront));
         [N, M] = size(PopObj);
 
         % Calculate the contribution of hypervolume of each solution
@@ -98,7 +98,7 @@ methods
 
         % Delete the worst solution from the last front
         [~, worst] = min(deltaS);
-        FrontNo = Algo.UpdateFront(population.Objs, FrontNo, LastFront(worst));
+        FrontNo = Algo.UpdateFront(Objs(population), FrontNo, LastFront(worst));
         population(LastFront(worst)) = [];
     end
 

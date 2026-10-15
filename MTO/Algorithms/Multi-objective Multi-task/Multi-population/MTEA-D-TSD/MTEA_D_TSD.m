@@ -79,7 +79,7 @@ methods
                 population{t}(i).SD = zeros(1, maxD);
                 population{t}(i).TR = Algo.TR0;
             end
-            Z{t} = min(population{t}.Objs, [], 1);
+            Z{t} = min(Objs(population{t}), [], 1);
             if N(t) < Prob.N % Fill population
                 population{t}(N(t) + 1:Prob.N) = population{t}(1:Prob.N - N(t));
             end
@@ -135,11 +135,11 @@ methods
                     offspring = Algo.Evaluation(offspring, Prob, t);
                     Z{t} = min(Z{t}, offspring.Obj);
                     % Tchebycheff approach
-                    g_old = max(abs(population{t}(P).Objs - repmat(Z{t}, length(P), 1)) .* W{t}(P, :), [], 2);
+                    g_old = max(abs(Objs(population{t}(P)) - repmat(Z{t}, length(P), 1)) .* W{t}(P, :), [], 2);
                     g_new = max(repmat(abs(offspring.Obj - Z{t}), length(P), 1) .* W{t}(P, :), [], 2);
 
                     CVO = offspring.CV;
-                    CVP = population{t}(P).CVs;
+                    CVP = CVs(population{t}(P));
                     replace = P(find(g_old >= g_new & CVP == CVO | CVP > CVO, Algo.NR));
                     population{t}(replace) = offspring;
 

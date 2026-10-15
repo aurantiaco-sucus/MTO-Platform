@@ -41,7 +41,7 @@ elseif s.Stage == 2
     if i == numel(s.Donors)
         % Preserve the author's loop bounds, including overwriting probe slot L.
         for j = numel(s.Donors):round(Prob.N / 2) - numel(s.Donors)
-            source = s.Donors(StreamFitnessRoulette(Algo.Population{t}(1:numel(s.Donors)).Objs));
+            source = s.Donors(StreamFitnessRoulette(Objs(Algo.Population{t}(1:numel(s.Donors)))));
             Algo.Population{t}(j).Dec = Algo.Population{source}(randi(Prob.N)).Dec;
         end
         s.Stage = 3; s.Offset = 0;

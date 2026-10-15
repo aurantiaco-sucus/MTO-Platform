@@ -71,7 +71,7 @@ methods
                     % Setting Before Running
                     for t = 1:Prob.T
                         model{t} = ProbabilityModel('mvarnorm');
-                        model{t} = ProbabilityModel.buildmodel(model{t}, population{t}.Decs);
+                        model{t} = ProbabilityModel.buildmodel(model{t}, Decs(population{t}));
                     end
                     % Re-Initialization
                     population = Initialization(Algo, Prob, Individual);
@@ -85,7 +85,7 @@ methods
                     if mod(Algo.Gen, Algo.Delta) == 0
                         % Transfer
                         mmodel = MixtureModel(model);
-                        mmodel = MixtureModel.createtable(mmodel, population{t}.Decs, true, 'mvarnorm');
+                        mmodel = MixtureModel.createtable(mmodel, Decs(population{t}), true, 'mvarnorm');
                         mmodel = MixtureModel.EMstacking(mmodel);
                         mmodel = MixtureModel.mutate(mmodel);
                         offspring_Dec = MixtureModel.sample(mmodel, Prob.N);

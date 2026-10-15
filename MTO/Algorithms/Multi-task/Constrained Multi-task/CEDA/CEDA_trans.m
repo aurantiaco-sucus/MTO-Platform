@@ -1,7 +1,7 @@
-function trans = DA_trans(Ds, Dt, D)
+function trans = CEDA_trans(Ds, Dt, D)
 
-Ds_Dec = Ds.Decs;
-Dt_Dec = Dt.Decs;
+Ds_Dec = Decs(Ds);
+Dt_Dec = Decs(Dt);
 
 mus = mean(Ds_Dec);
 mut = mean(Dt_Dec);

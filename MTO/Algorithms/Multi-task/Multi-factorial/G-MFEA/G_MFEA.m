@@ -61,7 +61,7 @@ methods
         for t = 1:Prob.T
             meanT{t} = zeros(1, max(Prob.D));
             population_t = population([population.MFFactor] == t);
-            pop_Dec{t} = population_t.Decs;
+            pop_Dec{t} = Decs(population_t);
             pop_Rank{t} = [];
         end
         for t = 1:Prob.T - 1
@@ -89,7 +89,7 @@ methods
             % Generation
             offspring = Algo.Generation(population, transfer);
             % Evaluation
-            offspring_temp = Individual_MF.empty();
+            offspring_temp = repmat(Individual_MF(), 0, 0);
             for t = 1:Prob.T
                 offspring_t = offspring([offspring.MFFactor] == t);
                 offspring_t = Algo.Evaluation(offspring_t, Prob, t);
@@ -109,8 +109,8 @@ methods
             pop_Dec = {}; pop_Rank = {};
             for t = 1:Prob.T
                 population_t = population([population.MFFactor] == t);
-                pop_Dec{t} = population_t.Decs;
-                [~, pop_Rank{t}] = sortrows([population_t.CVs, population_t.Objs], [1, 2]);
+                pop_Dec{t} = Decs(population_t);
+                [~, pop_Rank{t}] = sortrows([CVs(population_t), Objs(population_t)], [1, 2]);
             end
 
             if Algo.Gen >= Algo.Phi * (Prob.maxFE / (Prob.N * Prob.T)) && ...

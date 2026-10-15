@@ -8,6 +8,16 @@ Full inventory: `alg.md`. In-scope worklist: `alg_incl.md`. Contract: `interface
 
 Paths are relative to `MTO/Algorithms/` unless stated otherwise.
 
+
+## Verified progress (2026-10-15)
+
+All ten algorithm pilots now pass the headless smoke suite in `tests/octave_smoke.m`:
+`GA`, `jDE`, `CMA_ES`, `NSGA_II`, `MFEA`, `ECHT`, `MFEA_II`, `EMaTO_MKT`, `MO_MFEA`, and
+`AEMEA`. The suite covers online RMP learning and Forge statistics, many-task clustering,
+joint multi-objective/multifactorial sorting, and the stream transfer checkpoint, with exact
+FE and per-task budget assertions. Other algorithms and stream implementations remain
+untested.
+
 ## Selection principle
 
 Representatives are picked by **mechanism, not by popularity or recency**, under three

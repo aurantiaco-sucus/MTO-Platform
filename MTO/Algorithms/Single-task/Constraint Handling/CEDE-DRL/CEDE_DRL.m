@@ -81,7 +81,7 @@ methods
         for t = 1:Prob.T
             STRecord{t} = zeros(1, STNum) + n0;
             for ch = 1:CHNum
-                archive{t, ch} = Individual_DE44.empty();
+                archive{t, ch} = repmat(Individual_DE44(), 0, 0);
             end
 
             % initialize parameters of Epsilon Constraint

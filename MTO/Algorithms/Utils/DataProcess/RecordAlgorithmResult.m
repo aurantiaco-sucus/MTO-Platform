@@ -24,11 +24,11 @@ for t = 1:Prob.T
     else
         popSol = Pop{t};
         if ~isempty(checkpointSlots)
-            checkpoint(t).Obj = popSol.Objs;
-            checkpoint(t).CV = popSol.CVs;
+            checkpoint(t).Obj = Objs(popSol);
+            checkpoint(t).CV = CVs(popSol);
             checkpoint(t).PopSize = length(popSol);
             if Algo.Save_Dec
-                checkpoint(t).Dec = popSol.Decs;
+                checkpoint(t).Dec = Decs(popSol);
             end
         end
 
@@ -38,8 +38,8 @@ for t = 1:Prob.T
             numToAdd = Prob.N - currentSize;
             popSol = [popSol, popSol(randi(currentSize, 1, numToAdd))];
         end
-        Algo.Result(t, gen).Obj = popSol.Objs;
-        Algo.Result(t, gen).CV = popSol.CVs;
+        Algo.Result(t, gen).Obj = Objs(popSol);
+        Algo.Result(t, gen).CV = CVs(popSol);
         Algo.Result(t, gen).Dec = [];
     end
 end

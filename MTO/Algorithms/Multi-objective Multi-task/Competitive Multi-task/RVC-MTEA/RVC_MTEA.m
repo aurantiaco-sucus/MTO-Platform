@@ -75,7 +75,7 @@ methods
             % fill the archive to Prob.N
             archive{t}(N + 1:Prob.N) = population{t}(1:Prob.N - N);
 
-            Z{t} = min(population{t}.Objs, [], 1);
+            Z{t} = min(Objs(population{t}), [], 1);
             Zall = min(Zall, Z{t});
             for i = 1:N
                 population{t}(i).SD = -0.05 + 0.1 * rand(1, max(Prob.D));
@@ -86,7 +86,7 @@ methods
         while Algo.notTerminated(Prob, archive)
             % Calculate contribution
             allPop = [population{:}];
-            FrontNo = NDSort(allPop.Objs, inf);
+            FrontNo = NDSort(Objs(allPop), inf);
             Next = FrontNo <= median(FrontNo);
             for t = 1:Prob.T
                 Contributed(t, :) = Next(N * (t - 1) + 1:N * t);
@@ -140,16 +140,16 @@ methods
                     switch Algo.Type
                         case 1
                             % Tchebycheff approach
-                            g_old = max(abs(population{t}(P).Objs - repmat(Z{t}, length(P), 1)) .* W(P, :), [], 2);
+                            g_old = max(abs(Objs(population{t}(P)) - repmat(Z{t}, length(P), 1)) .* W(P, :), [], 2);
                             g_new = max(repmat(abs(offspring.Obj - Z{t}), length(P), 1) .* W(P, :), [], 2);
                         case 2
                             % Tchebycheff approach with normalization
-                            Zmax = max(population{t}.Objs, [], 1);
-                            g_old = max(abs(population{t}(P).Objs - repmat(Z{t}, length(P), 1)) ./ repmat(Zmax - Z{t}, length(P), 1) .* W(P, :), [], 2);
+                            Zmax = max(Objs(population{t}), [], 1);
+                            g_old = max(abs(Objs(population{t}(P)) - repmat(Z{t}, length(P), 1)) ./ repmat(Zmax - Z{t}, length(P), 1) .* W(P, :), [], 2);
                             g_new = max(repmat(abs(offspring.Obj - Z{t}) ./ (Zmax - Z{t}), length(P), 1) .* W(P, :), [], 2);
                     end
                     CVO = offspring.CV;
-                    CVP = population{t}(P).CVs;
+                    CVP = CVs(population{t}(P));
                     population{t}(P(find(g_old >= g_new & CVP == CVO | CVP > CVO, Algo.NR))) = offspring;
                     archive{t} = [archive{t}, offspring];
                 end
@@ -170,14 +170,14 @@ methods
 
                     switch Algo.Type
                         case 1
-                            g_old = max(abs(population{t}.Objs - repmat(Z{t}, N, 1)) .* W, [], 2);
+                            g_old = max(abs(Objs(population{t}) - repmat(Z{t}, N, 1)) .* W, [], 2);
                             g_new = max(repmat(abs(candidate.Obj - Z{t}), N, 1) .* W, [], 2);
                         case 2
-                            Zmax = max(population{t}.Objs, [], 1);
-                            g_old = max(abs(population{t}.Objs - repmat(Z{t}, N, 1)) ./ repmat(Zmax - Z{t}, N, 1) .* W, [], 2);
+                            Zmax = max(Objs(population{t}), [], 1);
+                            g_old = max(abs(Objs(population{t}) - repmat(Z{t}, N, 1)) ./ repmat(Zmax - Z{t}, N, 1) .* W, [], 2);
                             g_new = max(repmat(abs(candidate.Obj - Z{t}) ./ (Zmax - Z{t}), N, 1) .* W, [], 2);
                     end
-                    CVP = population{t}.CVs;
+                    CVP = CVs(population{t});
                     replace = find((g_old >= g_new & CVP == candidate.CV) | CVP > candidate.CV, Algo.NR);
                     if ~isempty(replace)
                         population{t}(replace) = candidate;
@@ -201,7 +201,7 @@ methods
             allArc = [archive{:}];
             counts = cellfun(@length, archive);
             cumCounts = [0, cumsum(counts)];
-            FrontNo = NDSort(allArc.Objs, allArc.CVs, inf);
+            FrontNo = NDSort(Objs(allArc), CVs(allArc), inf);
             for t = 1:Prob.T
                 FrontNo_t = FrontNo(cumCounts(t) + (1:counts(t)));
                 next = FrontNo_t == 1;
@@ -209,7 +209,7 @@ methods
                     [~, rank] = sort(FrontNo_t);
                     next(rank(1:Prob.N)) = true;
                 elseif sum(next) > Prob.N
-                    del = Algo.Truncation(archive{t}(next).Objs, sum(next) - Prob.N);
+                    del = Algo.Truncation(Objs(archive{t}(next)), sum(next) - Prob.N);
                     temp = find(next);
                     next(temp(del)) = false;
                 end

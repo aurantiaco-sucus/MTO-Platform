@@ -138,6 +138,23 @@ two profiles are equal. This localises a divergence to a single generation, whic
 pinned down exactly with a fixture stream — a two-step bisect instead of one, which is an
 acceptable cost.
 
+### LHS-design shim profile
+
+`MTEA_PAE` and `MO_MTEA_PAE` call only `lhsdesign(n,p)`. MathWorks documents smooth
+Latin-hypercube output by default, a maximin criterion, and five criterion-improvement
+iterations. The Octave shim follows that design intent by generating one initial candidate
+plus five fixed candidates and selecting the candidate with the largest minimum Euclidean
+pairwise distance. Each candidate is smooth: for every dimension, generate `randperm(n)` and
+then `rand(n,1)` jitter within the permuted strata.
+
+That order is the **pinned Octave/Rust profile**. Given Octave's verified `randperm(n)` uses
+`n-1` uniform draws, the shim consumes `6 * p * (2*n - 1)` `rand` values. Its smoke tests
+check stratum coverage and the final RNG state against that profile. The count/order used
+inside MATLAB's implementation is not exposed in its documentation and cannot be checked
+here; this is a documented Octave-specific reference, not a claim of MATLAB draw-profile
+parity. Do not replace it with a one-shot LHS or stop early based on candidate quality.
+
+
 ### Why this fits this codebase specifically
 
 The repository already treats draw order as semantic. `MTO/Algorithms/Utils/Boundary/README.md`

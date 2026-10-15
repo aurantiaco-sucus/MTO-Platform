@@ -50,7 +50,7 @@ methods
                 population{t}(i).KP = rand(); % Knowledge type proportion
             end
             [population{t}, Fitness{t}] = Selection_SPEA2(population{t}, Prob.N);
-            decs = population{t}.Decs;
+            decs = Decs(population{t});
             model{t}.mean = mean(decs);
             model{t}.std = std(decs) +1e-100;
         end
@@ -59,7 +59,7 @@ methods
             for t = 1:Prob.T
                 [~, rank{t}] = sort(Fitness{t});
                 [~, rank{t}] = sort(rank{t});
-                decs = population{t}.Decs;
+                decs = Decs(population{t});
                 alpha = 0.5;
                 model{t}.mean = alpha * model{t}.mean + (1 - alpha) * mean(decs);
                 model{t}.std = alpha * model{t}.std + (1 - alpha) * (std(decs)) +1e-100;

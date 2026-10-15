@@ -53,13 +53,13 @@ methods
         % Initialize
         population = Initialization(Algo, Prob, Individual);
         for t = 1:Prob.T
-            FrontNo{t} = NDSort(population{t}.Objs, inf);
+            FrontNo{t} = NDSort(Objs(population{t}), inf);
         end
 
         while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 % Normalize the population
-                PopObj = population{t}.Objs;
+                PopObj = Objs(population{t});
                 fmax = max(PopObj(FrontNo{t} == 1, :), [], 1);
                 fmin = min(PopObj(FrontNo{t} == 1, :), [], 1);
                 PopObj = (PopObj - repmat(fmin, size(PopObj, 1), 1)) ./ repmat(fmax - fmin, size(PopObj, 1), 1);

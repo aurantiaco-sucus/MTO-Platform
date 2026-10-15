@@ -94,7 +94,7 @@ methods
                 % feature whenever possible, while applying the same boundary
                 % penalty as RankWithBoundaryHandling.
                 rank = RankWithBoundaryHandling(sample{t}, Prob);
-                fitness = sample{t}.Objs;
+                fitness = Objs(sample{t});
                 if Prob.Bounded
                     objScale = max(abs(fitness));
                     if objScale < 1
@@ -110,7 +110,7 @@ methods
                 % lexicographic (CV, objective) order. Use finite ordinal
                 % values for constrained or failed evaluations; centered-rank
                 % information is retained and Inf/NaN cannot reach JAX.
-                if any(sample{t}.CVs > 0) || any(~isfinite(fitness))
+                if any(CVs(sample{t}) > 0) || any(~isfinite(fitness))
                     fitness = zeros(N{t}, 1);
                     fitness(rank) = (0:N{t} - 1)';
                 end

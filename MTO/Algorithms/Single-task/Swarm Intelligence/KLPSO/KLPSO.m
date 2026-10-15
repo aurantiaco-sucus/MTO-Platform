@@ -93,8 +93,8 @@ methods
                 end
 
                 [~, replace] = Selection_Tournament(old_population, population{t});
-                OldDec = old_population(replace).Decs;
-                NewDec = population{t}(replace).Decs;
+                OldDec = Decs(old_population(replace));
+                NewDec = Decs(population{t}(replace));
                 in_list{t} = [in_list{t}; OldDec];
                 out_list{t} = [out_list{t}; NewDec - OldDec];
 

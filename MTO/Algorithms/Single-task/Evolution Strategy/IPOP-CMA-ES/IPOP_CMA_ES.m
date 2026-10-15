@@ -90,14 +90,14 @@ methods
 
                 % Update mean decision variables
                 oldDec = mDec{t};
-                mDec{t} = weights{t} * sample{t}(rank{t}(1:mu{t})).Decs;
+                mDec{t} = weights{t} * Decs(sample{t}(rank{t}(1:mu{t})));
                 Algo.Mean{t} = mDec{t};
                 % Update evolution paths
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff{t}) * invsqrtC{t} * (mDec{t} - oldDec)' / sigma{t};
                 hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * taskFE(t) / lambda{t})) / chiN{t} < 1.4 + 2 / (n{t} + 1);
                 pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff{t}) * (mDec{t} - oldDec)' / sigma{t};
                 % Update covariance matrix
-                artmp = (sample{t}(rank{t}(1:mu{t})).Decs - repmat(oldDec, mu{t}, 1))' / sigma{t};
+                artmp = (Decs(sample{t}(rank{t}(1:mu{t}))) - repmat(oldDec, mu{t}, 1))' / sigma{t};
                 delta = (1 - hsig) * cc{t} * (2 - cc{t});
                 C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t} * pc{t}' + delta * C{t}) + cmu{t} * artmp * diag(weights{t}) * artmp';
                 % Update step size
@@ -114,7 +114,7 @@ methods
                 % Restart strategy IPOP
                 preGen = 10 + (30 * fix(n{t} / lambda{t}));
                 ObjHist{t} = ObjHist{t}(max(1, length(ObjHist{t}) - preGen):end);
-                ObjList = [ObjHist{t}, [sample{t}.Objs]'];
+                ObjList = [ObjHist{t}, [Objs(sample{t})]'];
                 if all(sigma{t} * (max(abs(pc{t}), sqrt(diag(C{t})))) < ...
                         1e-12 * Algo.sigma0 * initESSigmaScale(Prob, t)) || ...
                         any(sigma{t} * sqrt(diag(C{t})) > 1e8) || ...

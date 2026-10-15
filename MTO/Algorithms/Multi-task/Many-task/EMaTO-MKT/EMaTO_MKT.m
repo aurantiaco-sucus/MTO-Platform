@@ -72,7 +72,7 @@ methods
             difference = inf .* ones(Prob.T);
             for t = 1:Prob.T - 1
                 for k = t + 1:Prob.T
-                    difference(t, k) = Algo.mmd(population{t}.Decs', population{k}.Decs', Algo.Sigma);
+                    difference(t, k) = Algo.mmd(Decs(population{t})', Decs(population{k})', Algo.Sigma);
                     difference(k, t) = difference(t, k);
                 end
             end
@@ -87,7 +87,7 @@ methods
                 % Evaluation
                 offspring{t} = Algo.Evaluation(offspring{t}, Prob, t);
                 population{t} = [population{t}, offspring{t}];
-                [~, rank] = sort(population{t}.Objs);
+                [~, rank] = sort(Objs(population{t}));
                 population{t} = population{t}(rank(1:Prob.N));
             end
         end
@@ -95,6 +95,7 @@ methods
 
     function offspring = Generation(Algo, population, AMP, cluster_model)
         for t = 1:length(population)
+            offspring{t} = repmat(Individual_MKT(), 1, 0);
             indorder = randperm(length(population{t}));
             count = 1;
             for i = 1:ceil(length(population{t}) / 2)
@@ -133,13 +134,13 @@ methods
             clusterModel(i).Nich_mean = zeros(K, dim);
             clusterModel(i).Nich_std = zeros(K, dim);
             Subpop = TempPopulation{i};
-            SubpopRnvec = Subpop.Decs;
+            SubpopRnvec = Decs(Subpop);
             temp_difference = difference(i, :);
             [~, index] = sort(temp_difference);
             %--------------Generate clusters by k-means--------------------------
             for j = 1:knowledge_task_num
                 Selected_population = population{index(j)};
-                SubpopRnvec = [SubpopRnvec; Selected_population.Decs];
+                SubpopRnvec = [SubpopRnvec; Decs(Selected_population)];
             end
             [idx, ~] = kmeans(SubpopRnvec, K, 'Distance', 'cityblock', 'MaxIter', 30);
             for ii = 1:length(Subpop)

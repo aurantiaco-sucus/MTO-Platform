@@ -91,9 +91,9 @@ methods
 
     function [offspring, flag] = Generation(Algo, population, stProb, CRm)
         offspring = population;
-        minCV = min([population.CVs]);
-        idxCV = find([population.CVs] == minCV);
-        [~, idxObj] = min([population(idxCV).Objs]);
+        minCV = min([CVs(population)]);
+        idxCV = find([CVs(population)] == minCV);
+        [~, idxObj] = min([Objs(population(idxCV))]);
         best = idxCV(idxObj);
 
         flag = zeros(1, length(population));

@@ -60,7 +60,7 @@ methods
         Algo.State = cell(1, Prob.T);
         Algo.TaskHistory = repmat({struct('FE', {}, 'Obj', {}, 'CV', {}, 'Dec', {})}, 1, Prob.T);
         Algo.Mean = cell(1, Prob.T);
-        Algo.Population = repmat({Individual.empty(1, 0)}, 1, Prob.T);
+        Algo.Population = repmat({repmat(Individual(), 1, 0)}, 1, Prob.T);
         % Placeholder best solutions keep all task slots available to notTerminated.
         missing = Individual();
         missing.Dec = nan(1, max(Prob.D));
@@ -157,7 +157,8 @@ methods (Access = protected)
 end
 
 methods (Abstract, Access = protected)
-    step(Algo, Prob, active) % Evaluate and update any available tasks.
+    function step(Algo, Prob, active) % Evaluate and update any available tasks.
+    end
 end
 
 methods (Access = private)

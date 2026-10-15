@@ -113,8 +113,8 @@ methods
             offspring1 = Algo.Generation1(population1(mating_pool1));
             offspring2 = Algo.Generation2(population2(mating_pool2));
             % Evaluation
-            offspring_temp1 = Individual_MF.empty();
-            offspring_temp2 = Individual_MF.empty();
+            offspring_temp1 = repmat(Individual_MF(), 0, 0);
+            offspring_temp2 = repmat(Individual_MF(), 0, 0);
             for t = 1:Prob.T
                 offspring_t1 = offspring1([offspring1.MFFactor] == t);
                 offspring_t1 = Algo.Evaluation(offspring_t1, Prob, t);
@@ -163,8 +163,8 @@ methods
                 p = [p1, p2];
                 offspring(i).MFFactor = population(p(randi(2))).MFFactor;
             elseif rand() < Algo.RMP
-                Ds = Individual_MF.empty();
-                Dt = Individual_MF.empty();
+                Ds = repmat(Individual_MF(), 0, 0);
+                Dt = repmat(Individual_MF(), 0, 0);
                 % DA
                 pm1 = population(p1); pm2 = population(p2);
                 MF1 = pm1.MFFactor;
@@ -226,8 +226,8 @@ methods
                 p = [p1, p2];
                 offspring(i).MFFactor = population(p(randi(2))).MFFactor;
             elseif rand() < 0
-                Ds = Individual_MF.empty();
-                Dt = Individual_MF.empty();
+                Ds = repmat(Individual_MF(), 0, 0);
+                Dt = repmat(Individual_MF(), 0, 0);
                 % DA
                 pm1 = population(p1); pm2 = population(p2);
                 MF1 = pm1.MFFactor;

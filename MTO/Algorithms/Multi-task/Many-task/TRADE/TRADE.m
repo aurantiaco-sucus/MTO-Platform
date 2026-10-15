@@ -59,7 +59,7 @@ methods
 
         population = Initialization(Algo, Prob, Individual_DE);
         for t = 1:Prob.T
-            Arc{t} = Individual_DE.empty();
+            Arc{t} = repmat(Individual_DE(), 0, 0);
         end
 
         while Algo.notTerminated(Prob, population)
@@ -170,7 +170,7 @@ methods
     end
 
     function offspring = Generation(Algo, population, union)
-        [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
+        [~, rank] = sortrows([CVs(population), Objs(population)], [1, 2]);
         pop_pbest = rank(1:max(round(0.1 * length(population)), 1));
 
         for i = 1:length(population)

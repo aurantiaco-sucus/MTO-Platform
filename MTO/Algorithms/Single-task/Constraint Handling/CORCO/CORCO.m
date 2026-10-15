@@ -71,7 +71,7 @@ methods
                         cor_flag{t} = true;
                     end
                 end
-                weights = WeightGenerator(length(population{t}), population{t}.CVs, population{t}.Objs, X{t}, cor_idx{t}, div_delta{t}, stage);
+                weights = WeightGenerator(length(population{t}), CVs(population{t}), Objs(population{t}), X{t}, cor_idx{t}, div_delta{t}, stage);
 
                 % Generation
                 offspring = Algo.Generation(population{t}, F_pool, CR_pool, weights);
@@ -82,7 +82,7 @@ methods
                 population{t} = Algo.Selection(population{t}, offspring, weights);
                 archive{t} = Algo.SelectionArchive(archive{t}, offspring, stage);
 
-                [con_obj_betterNum, obj_con_betterNum] = InterCompare(archive{t}.Objs, archive{t}.CVs, population{t}.Objs, population{t}.CVs);
+                [con_obj_betterNum, obj_con_betterNum] = InterCompare(Objs(archive{t}), CVs(archive{t}), Objs(population{t}), CVs(population{t}));
                 p = reshape([population{t}.Dec], length(population{t}(1).Dec), length(population{t}))';
                 div_idx{t} = sum(std(p)) / size(p, 2);
                 betterRecord1{t} = [betterRecord1{t}, con_obj_betterNum];
@@ -92,7 +92,7 @@ methods
     end
 
     function offspring = Generation(Algo, population, F_pool, CR_pool, weights)
-        Obj = population.Objs; CV = population.CVs;
+        Obj = Objs(population); CV = CVs(population);
         normal_Obj = (Obj - min(Obj)) ./ (max(Obj) - min(Obj) +1e-15);
         normal_CV = (CV - min(CV)) ./ (max(CV) - min(CV) +1e-15);
 
@@ -127,8 +127,8 @@ methods
     end
 
     function population = Selection(Algo, population, offspring, weights)
-        Obj = [population.Objs', offspring.Objs'];
-        CV = [population.CVs', offspring.CVs'];
+        Obj = [Objs(population)', Objs(offspring)'];
+        CV = [CVs(population)', CVs(offspring)'];
         normal_Obj = (Obj - min(Obj)) ./ (max(Obj) - min(Obj) +1e-15);
         normal_CV = (CV - min(CV)) ./ (max(CV) - min(CV) +1e-15);
 

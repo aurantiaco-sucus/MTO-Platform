@@ -37,13 +37,13 @@ methods
                 % Evaluation
                 offspring = Algo.Evaluation(offspring, Prob, t);
                 % Selection
-                archive = offspring(offspring.CVs > population{t}.CVs & offspring.Objs < population{t}.Objs);
+                archive = offspring(CVs(offspring) > CVs(population{t}) & Objs(offspring) < Objs(population{t}));
                 [population{t}] = Selection_Tournament(population{t}, offspring);
 
                 % Replace Operator
                 N = round(max(5, length(population{t}) / 2)); % the maximum number of vectors to be replaced
                 Nf = round(length(population{t}) / N); % the number of parts to be divided
-                [~, rank] = sort(population{t}.Objs, 'descend');
+                [~, rank] = sort(Objs(population{t}), 'descend');
                 population{t} = population{t}(rank);
                 for i = 1:floor(length(population{t}) / Nf)
                     len = length(archive);
@@ -78,7 +78,7 @@ methods
     end
 
     function offspring = Generation(Algo, population, F_pool, CR_pool)
-        [~, best] = min(population.Objs);
+        [~, best] = min(Objs(population));
 
         for i = 1:length(population)
             offspring(i) = population(i);

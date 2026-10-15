@@ -54,7 +54,7 @@ methods
             n = numel(Pop{t});
             decs = [];
             if n > 0
-                decs = Pop{t}.Decs;
+                decs = Decs(Pop{t});
                 decs = decs(:, 1:Prob.D(t));
             end
             % Compare decision values to skip unchanged tasks and detect cross-task edits.

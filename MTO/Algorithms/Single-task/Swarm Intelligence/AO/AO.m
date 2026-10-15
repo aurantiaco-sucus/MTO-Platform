@@ -69,13 +69,13 @@ methods
 
             if Algo.FE <= 2/3 * Prob.maxFE
                 if rand() < 0.5
-                    offspring(i).Dec = Algo.Best{t}.Dec * (1 - Algo.FE / Prob.maxFE) + (mean(population.Decs) - Algo.Best{t}.Dec) * rand();
+                    offspring(i).Dec = Algo.Best{t}.Dec * (1 - Algo.FE / Prob.maxFE) + (mean(Decs(population)) - Algo.Best{t}.Dec) * rand();
                 else
                     offspring(i).Dec = Algo.Best{t}.Dec .* Algo.Levy(max(Prob.D)) + population(randi(length(population))).Dec + (y - x) * rand();
                 end
             else
                 if rand() < 0.5
-                    offspring(i).Dec = (Algo.Best{t}.Dec - mean(population.Decs)) * Algo.Alpha - rand() + rand() * Algo.Delta;
+                    offspring(i).Dec = (Algo.Best{t}.Dec - mean(Decs(population))) * Algo.Alpha - rand() + rand() * Algo.Delta;
                 else
                     offspring(i).Dec = QF * Algo.Best{t}.Dec - (G1 * population(i).Dec * rand()) - G2 .* Algo.Levy(max(Prob.D)) + rand() * G1;
                 end

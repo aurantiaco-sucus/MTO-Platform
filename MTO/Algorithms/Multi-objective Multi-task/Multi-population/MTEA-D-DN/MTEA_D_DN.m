@@ -58,7 +58,7 @@ methods
             B{t} = B{t}(:, 1:DT{t});
             population{t} = Initialization_One(Algo, Prob, t, Individual, N{t});
 
-            Z{t} = min(population{t}.Objs, [], 1);
+            Z{t} = min(Objs(population{t}), [], 1);
             if N{t} < Prob.N % Fill population
                 population{t}(N{t} + 1:Prob.N) = population{t}(1:Prob.N - N{t});
             end
@@ -95,7 +95,7 @@ methods
                             k = B2k{t}(i);
                             offspring = Algo.Evaluation(offspring, Prob, k);
                             Z{k} = min(Z{k}, offspring.Obj);
-                            g_old = max(abs(population{k}(P2).Objs - repmat(Z{k}, length(P2), 1)) .* W{k}(P2, :), [], 2);
+                            g_old = max(abs(Objs(population{k}(P2)) - repmat(Z{k}, length(P2), 1)) .* W{k}(P2, :), [], 2);
                             g_new = max(repmat(abs(offspring.Obj - Z{k}), length(P2), 1) .* W{k}(P2, :), [], 2);
                             population{k}(P2(g_old >= g_new)) = offspring;
 
@@ -109,7 +109,7 @@ methods
                         else
                             offspring = Algo.Evaluation(offspring, Prob, t);
                             Z{t} = min(Z{t}, offspring.Obj);
-                            g_old = max(abs(population{t}(P1).Objs - repmat(Z{t}, length(P1), 1)) .* W{t}(P1, :), [], 2);
+                            g_old = max(abs(Objs(population{t}(P1)) - repmat(Z{t}, length(P1), 1)) .* W{t}(P1, :), [], 2);
                             g_new = max(repmat(abs(offspring.Obj - Z{t}), length(P1), 1) .* W{t}(P1, :), [], 2);
                             population{t}(P1(g_old >= g_new)) = offspring;
                         end
@@ -118,7 +118,7 @@ methods
                         offspring = Algo.Generation(population{t}([i, P(1:2)]));
                         offspring = Algo.Evaluation(offspring, Prob, t);
                         Z{t} = min(Z{t}, offspring.Obj);
-                        g_old = max(abs(population{t}(P).Objs - repmat(Z{t}, length(P), 1)) .* W{t}(P, :), [], 2);
+                        g_old = max(abs(Objs(population{t}(P)) - repmat(Z{t}, length(P), 1)) .* W{t}(P, :), [], 2);
                         g_new = max(repmat(abs(offspring.Obj - Z{t}), length(P), 1) .* W{t}(P, :), [], 2);
                         population{t}(P(g_old >= g_new)) = offspring;
                     end

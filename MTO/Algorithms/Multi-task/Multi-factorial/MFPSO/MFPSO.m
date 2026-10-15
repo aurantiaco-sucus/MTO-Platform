@@ -67,7 +67,7 @@ methods
             % Generation
             population = Algo.Generation(population, W, Algo.Best);
             % Evaluation
-            population_temp = Individual_MFPSO.empty();
+            population_temp = repmat(Individual_MFPSO(), 0, 0);
             for t = 1:Prob.T
                 population_t = population([population.MFFactor] == t);
                 population_t = Algo.Evaluation(population_t, Prob, t);

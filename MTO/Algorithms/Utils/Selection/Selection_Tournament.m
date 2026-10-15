@@ -15,10 +15,10 @@ if nargin < 3
     Ep = 0;
 end
 
-PopObj = population.Objs;
-PopCV = population.CVs;
-OffObj = offspring.Objs;
-OffCV = offspring.CVs;
+PopObj = Objs(population);
+PopCV = CVs(population);
+OffObj = Objs(offspring);
+OffCV = CVs(offspring);
 
 % Apply epsilon constraint handling
 PopCV(PopCV <= Ep) = 0;

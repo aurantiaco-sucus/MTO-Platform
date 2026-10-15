@@ -57,7 +57,7 @@ methods
             MCR{t} = 0.8 .* ones(Algo.H + 1, 1);
             MF{t}(Algo.H + 1) = 0.9;
             MCR{t}(Algo.H + 1) = 0.9;
-            archive{t} = Individual_DE.empty();
+            archive{t} = repmat(Individual_DE(), 0, 0);
         end
 
         while Algo.notTerminated(Prob, population)
@@ -97,8 +97,8 @@ methods
                 % Calculate SF SCR
                 SF = [population{t}(replace).F];
                 SCR = [population{t}(replace).CR];
-                dif = population{t}(replace).CVs' - offspring(replace).CVs';
-                dif_obj = population{t}(replace).Objs' - offspring(replace).Objs';
+                dif = CVs(population{t}(replace))' - CVs(offspring(replace))';
+                dif_obj = Objs(population{t}(replace))' - Objs(offspring(replace))';
                 dif_obj(dif_obj < 0) = 0;
                 dif(dif <= 0) = dif_obj(dif <= 0);
                 dif = dif ./ sum(dif);
@@ -122,7 +122,7 @@ methods
 
                 % Linear Population Size Reduction
                 if length(population{t}) > N
-                    [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                    [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                     population{t} = population{t}(rank(1:N));
                 end
             end
@@ -131,7 +131,7 @@ methods
 
     function offspring = Generation(Algo, population, union, P, ratio)
         % get top 100p% individuals
-        [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
+        [~, rank] = sortrows([CVs(population), Objs(population)], [1, 2]);
         pop_pbest = rank(1:max(round(P * length(population)), 1));
 
         for i = 1:length(population)

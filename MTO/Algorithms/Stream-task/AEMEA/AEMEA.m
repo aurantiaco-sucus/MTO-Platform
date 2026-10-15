@@ -107,12 +107,12 @@ methods (Access = protected)
             batch = batch(1:Prob.N);
             if Algo.SNum <= 0 || isempty(donors) || ~StreamFECheckpoint(Algo.TaskFE(t), Prob.N, Algo.TGap), return; end
             count = min(Prob.N, round(Algo.SNum / (Prob.T - 1)));
-            inject = Individual.empty();
+            inject = repmat(Individual(), 0, 0);
             for k = donors
-                [~, rank] = sortrows([Algo.Population{t}.CVs, Algo.Population{t}.Objs]);
-                x = Algo.Population{t}(rank).Decs; x = x(:, 1:Prob.D(t));
-                [~, rank] = sortrows([Algo.Population{k}.CVs, Algo.Population{k}.Objs]);
-                y = Algo.Population{k}(rank).Decs; y = y(:, 1:Prob.D(k));
+                [~, rank] = sortrows([CVs(Algo.Population{t}), Objs(Algo.Population{t})]);
+                x = Decs(Algo.Population{t}(rank)); x = x(:, 1:Prob.D(t));
+                [~, rank] = sortrows([CVs(Algo.Population{k}), Objs(Algo.Population{k})]);
+                y = Decs(Algo.Population{k}(rank)); y = y(:, 1:Prob.D(k));
                 % Fit the mapping from current populations in original coordinates, then normalize.
                 x = x .* (Prob.Ub{t} - Prob.Lb{t}) + Prob.Lb{t};
                 y = y .* (Prob.Ub{k} - Prob.Lb{k}) + Prob.Lb{k};

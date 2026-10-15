@@ -43,7 +43,7 @@ methods
         % Initialize
         population = Initialization(Algo, Prob, Individual_PSO);
         for t = 1:Prob.T
-            CV = sum(max(0, population{t}.Cons), 2);
+            CV = sum(max(0, Cons(population{t})), 2);
             CVmax = max(CV);
             epsilon_0 = CVmax;
             epsilon{t} = epsilon_0;
@@ -60,7 +60,7 @@ methods
 
         while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
-                CV = sum(max(0, pop_com{t}.Cons), 2);
+                CV = sum(max(0, Cons(pop_com{t})), 2);
                 CV_max = max(CV);
                 CVmax = max([CV_max, CVmax]);
                 epsilon_0 = CVmax;

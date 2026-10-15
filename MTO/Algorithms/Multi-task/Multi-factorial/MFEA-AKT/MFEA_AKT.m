@@ -59,7 +59,7 @@ methods
             % Generation
             offspring = Algo.Generation(population);
             % Evaluation
-            offspring_temp = Individual_AKT.empty();
+            offspring_temp = repmat(Individual_AKT(), 0, 0);
             for t = 1:Prob.T
                 offspring_t = offspring([offspring.MFFactor] == t);
                 offspring_t = Algo.Evaluation(offspring_t, Prob, t);

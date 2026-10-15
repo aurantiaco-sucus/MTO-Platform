@@ -20,8 +20,12 @@ population(1, TotalN) = Individual_Class();
 
 InitVec = inf(1, T);
 InitCell = repmat({InitVec}, 1, TotalN);
-[population.MFObj] = deal(InitCell{:});
-[population.MFCV] = deal(InitCell{:});
+for i = 1:TotalN
+    population(i).MFObj = InitCell{i};
+end
+for i = 1:TotalN
+    population(i).MFCV = InitCell{i};
+end
 
 for t = 1:T
     idx_start = (t - 1) * N + 1;
@@ -31,13 +35,17 @@ for t = 1:T
     % Generate Random Decision Variables
     PopDec = rand(N, maxD); % Decision variables in [0,1]
     DecCell = num2cell(PopDec, 2);
-    [pop_t.Dec] = deal(DecCell{:});
+    for i = 1:N
+        pop_t(i).Dec = DecCell{i};
+    end
 
     % Evaluate Initial Sub-population for task t
     pop_t = Algo.Evaluation(pop_t, Prob, t);
 
     % Assign MFFactor
-    [pop_t.MFFactor] = deal(t);
+    for i = 1:numel(pop_t)
+        pop_t(i).MFFactor = t;
+    end
 
     % Update MFObj and MFCV for the current task t
     Objs = reshape([pop_t.Obj], length(pop_t(1).Obj), N)';

@@ -120,15 +120,15 @@ methods (Access = protected)
     end
 
     function probeSource(Algo, Prob, t, source)
-        [~, best] = min(Algo.Population{source}.Objs);
+        [~, best] = min(Objs(Algo.Population{source}));
         probe = Algo.Evaluation(Algo.Population{source}(best), Prob, t);
         previous = Algo.Shared.Archive{source, t};
         if isempty(previous) || probe.Obj < previous.Obj
             Algo.Shared.Archive{source, t} = probe;
         end
         % Preserve BoKTDE's immediate elite injection after a useful probe.
-        if probe.Obj < min(Algo.Population{t}.Objs)
-            [~, worst] = max(Algo.Population{t}.Objs);
+        if probe.Obj < min(Objs(Algo.Population{t}))
+            [~, worst] = max(Objs(Algo.Population{t}));
             Algo.Population{t}(worst) = probe;
         end
     end
@@ -138,14 +138,14 @@ methods (Access = protected)
         if isempty(donors), return; end
         position = inf(1, numel(donors));
         distance = inf(1, numel(donors));
-        target = Algo.Population{t}.Decs;
+        target = Decs(Algo.Population{t});
         for i = 1:numel(donors)
             record = Algo.Shared.Archive{donors(i), t};
             if isempty(record), continue; end
             position(i) = record.Obj;
             % Ignore unused padding coordinates for unequal-dimension tasks.
             d = min(Prob.D(t), Prob.D(donors(i)));
-            donor = Algo.Population{donors(i)}.Decs;
+            donor = Decs(Algo.Population{donors(i)});
             distance(i) = Algo.distributionDistance(target(:, 1:d), donor(:, 1:d));
         end
         valid = isfinite(position) & isfinite(distance);
@@ -171,10 +171,10 @@ methods (Access = protected)
 
     function [batch, context] = makeBatch(Algo, Prob, t, donors)
         [source, strategy] = Algo.selectSource(Prob, t, donors);
-        parent = Algo.Population{t}; Q = parent.Decs;
-        [~, best] = min(parent.Objs); pbest = parent(best).Dec;
+        parent = Algo.Population{t}; Q = Decs(parent);
+        [~, best] = min(Objs(parent)); pbest = parent(best).Dec;
         if strategy > 0
-            Q1 = Algo.Population{source}.Decs;
+            Q1 = Decs(Algo.Population{source});
             if strategy == 2
                 Q1 = Q1 - mean(Q1, 1) + mean(Q, 1);
             end
@@ -208,7 +208,7 @@ methods (Access = protected)
     function acceptBatch(Algo, Prob, t, batch, context)
         n = numel(batch);
         combined = [batch, Algo.Population{t}];
-        [~, order] = sort(combined.Objs);
+        [~, order] = sort(Objs(combined));
         selected = order(1:Prob.N);
         Algo.Population{t} = combined(selected);
         mask = context.Mask(1:n);

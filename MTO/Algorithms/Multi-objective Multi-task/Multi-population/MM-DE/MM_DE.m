@@ -97,7 +97,7 @@ methods
 
                 % Selection
                 population_temp = [population{t}, offspring];
-                FrontNo = NDSort(population_temp.Objs, population_temp.CVs, inf);
+                FrontNo = NDSort(Objs(population_temp), CVs(population_temp), inf);
 
                 old = FrontNo(1:end / 2);
                 new = FrontNo(end / 2 + 1:end);

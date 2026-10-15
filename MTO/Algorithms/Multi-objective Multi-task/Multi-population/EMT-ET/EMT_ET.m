@@ -82,14 +82,14 @@ methods
     end
 
     function transfer_pop = Transfer(Algo, population, t)
-        transfer_pop = Individual_ET.empty();
+        transfer_pop = repmat(Individual_ET(), 0, 0);
         s = find([population{t}.isTrans] == true & [population{t}.FrontNo] < 2);
         if ~isempty(s)
             G_temp = ceil(Algo.G / length(s));
             for i = 1:length(s)
-                transfer_temp = Individual_ET.empty();
+                transfer_temp = repmat(Individual_ET(), 0, 0);
                 ot = population{t}(s(i)).OriginTask;
-                [~, idx] = sort(sqrt(sum((repmat(population{t}(s(i)).Dec, length(population{ot}), 1) - population{ot}.Decs).^2, 2)));
+                [~, idx] = sort(sqrt(sum((repmat(population{t}(s(i)).Dec, length(population{ot}), 1) - Decs(population{ot})).^2, 2)));
                 for j = 1:G_temp
                     transfer_temp(j) = population{ot}(idx(j));
                     transfer_temp(j).OriginTask = ot;

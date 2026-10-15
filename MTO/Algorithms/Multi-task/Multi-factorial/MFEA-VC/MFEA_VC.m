@@ -124,13 +124,13 @@ methods
                 lambda = 0.8; % 控制生成新个体的任务相似性权重，范围在0到1之间
                 newIndividuals = Algo.VAEModel.generate(Algo.X1, Algo.X2, lambda);
             else
-                newIndividuals = Individual_MF.empty();
+                newIndividuals = repmat(Individual_MF(), 0, 0);
             end
 
             % Generation
             offspring = Algo.Generation(population, newIndividuals);
             % Evaluation
-            offspring_temp = Individual_MF.empty();
+            offspring_temp = repmat(Individual_MF(), 0, 0);
 
             for t = 1:Prob.T
                 offspring_t = offspring([offspring.MFFactor] == t);

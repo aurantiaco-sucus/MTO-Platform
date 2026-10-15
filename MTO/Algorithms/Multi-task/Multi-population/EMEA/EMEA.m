@@ -62,8 +62,8 @@ methods
 
         init_pop_dec = {};
         for t = 1:Prob.T
-            [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
-            init_pop_dec{t} = population{t}(rank).Decs;
+            [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
+            init_pop_dec{t} = Decs(population{t}(rank));
             init_pop_dec{t} = init_pop_dec{t}(:, 1:Prob.D(t));
         end
 
@@ -82,15 +82,15 @@ methods
                 % Knowledge Transfer
                 if Algo.SNum > 0 && mod(Algo.Gen, Algo.TGap) == 0
                     inject_num = round(Algo.SNum ./ (Prob.T - 1));
-                    inject_pop = Individual.empty();
+                    inject_pop = repmat(Individual(), 0, 0);
                     for k = 1:Prob.T
                         if t == k
                             continue;
                         end
 
                         % extract best dec
-                        [~, his_rank] = sortrows([population{k}.CVs, population{k}.Objs], [1, 2]);
-                        his_pop_dec = population{k}(his_rank).Decs;
+                        [~, his_rank] = sortrows([CVs(population{k}), Objs(population{k})], [1, 2]);
+                        his_pop_dec = Decs(population{k}(his_rank));
                         his_best_dec = his_pop_dec(1:inject_num, 1:Prob.D(k));
 
                         % autoencoding transfer

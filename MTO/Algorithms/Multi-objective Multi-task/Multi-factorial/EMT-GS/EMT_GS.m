@@ -62,7 +62,7 @@ methods
                     continue;
                 end
                 [GANOff{t, k}, GAN{t, k}, stGAN{t, k}, DIS{t, k}, stDIS{t, k}] = InitialGAN( ...
-                    population{t}.Decs, population{k}.Decs, Algo.lrD, Algo.lrG, Algo.BS);
+                    Decs(population{t}), Decs(population{k}), Algo.lrD, Algo.lrG, Algo.BS);
             end
         end
         while Algo.notTerminated(Prob, population)
@@ -74,13 +74,13 @@ methods
                     if mod(Algo.Gen, Algo.G) == 0
                         % Train GAN
                         [GANOff{t, k}, GAN{t, k}, stGAN{t, k}, DIS{t, k}, stDIS{t, k}] = TrainGAN( ...
-                            population{t}.Decs, population{k}.Decs, GAN{t, k}, stGAN{t, k}, ...
+                            Decs(population{t}), Decs(population{k}), GAN{t, k}, stGAN{t, k}, ...
                             DIS{t, k}, stDIS{t, k}, Algo.lrD, Algo.lrG, Algo.BS);
                     else
                         if rand() < 0.5
-                            GANOff{t, k} = GenerateGAN(population{k}.Decs, GAN{t, k}, stGAN{t, k});
+                            GANOff{t, k} = GenerateGAN(Decs(population{k}), GAN{t, k}, stGAN{t, k});
                         else
-                            GANOff{t, k} = GenerateGAN(population{k}.Decs, GAN{t, k}, stGAN{k, t});
+                            GANOff{t, k} = GenerateGAN(Decs(population{k}), GAN{t, k}, stGAN{k, t});
                         end
                     end
                     GANOff{t, k} = cast(gather(GANOff{t, k}), 'double');

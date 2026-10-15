@@ -47,7 +47,7 @@ methods
         population = Initialization(Algo, Prob, Individual_DE);
         for t = 1:Prob.T
             [population{t}, Fitness{t}] = Selection_SPEA2(population{t}, Prob.N);
-            archive{t} = Individual_DE.empty();
+            archive{t} = repmat(Individual_DE(), 0, 0);
             for i = 1:Prob.N
                 population{t}(i).F = rand() + 0.2;
                 population{t}(i).CR = rand();
@@ -78,10 +78,10 @@ methods
                     end
                     P1 = population{t}(1:Prob.N / 2);
                     P2 = population{k}(1:Prob.N / 2);
-                    sMap{t} = som_randinit([P1.Decs; P2.Decs], 'msize', msize);
-                    sMap{t} = som_batchtrain(sMap{t}, [P1.Decs; P2.Decs], 'radius', [1, 0.8, 0.5, 0.3, 0.2, 0.1], 'trainlen', 6, 'neigh', 'gaussian');
+                    sMap{t} = som_randinit([Decs(P1); Decs(P2)], 'msize', msize);
+                    sMap{t} = som_batchtrain(sMap{t}, [Decs(P1); Decs(P2)], 'radius', [1, 0.8, 0.5, 0.3, 0.2, 0.1], 'trainlen', 6, 'neigh', 'gaussian');
                     NeighMat{t} = som_neighbors(sMap{t}, Algo.H);
-                    Bestmu{t} = som_bmus(sMap{t}, [P1.Decs; P2.Decs]);
+                    Bestmu{t} = som_bmus(sMap{t}, [Decs(P1); Decs(P2)]);
                     flag{t} = 1;
                 else
                     flag{t} = -1;
@@ -107,7 +107,7 @@ methods
                     end
                     A = (Fitall{t} - min(Fitall{t})) ./ (max(Fitall{t}) - min(Fitall{t}));
                     % Calculate the contribution of hypervolume of each solution
-                    PopObj = temp_p.Objs;
+                    PopObj = Objs(temp_p);
                     B = Algo.CalHV(PopObj, max(PopObj, [], 1) * 1.1, 1, 10000);
                     temp_A = max(A(1:Prob.N) - A(Prob.N + 1:end), 0);
                     B = B ./ (max(B) + eps);
@@ -118,7 +118,7 @@ methods
                     temp_p = population{t};
                     [population{t}, Fitness{t}, Next, Fitall{t}] = Selection_SPEA2(population{t}, Prob.N);
                     A = (Fitall{t} - min(Fitall{t})) ./ (max(Fitall{t}) - min(Fitall{t}));
-                    PopObj = temp_p.Objs;
+                    PopObj = Objs(temp_p);
                     B = Algo.CalHV(PopObj, max(PopObj, [], 1) * 1.1, 1, 10000);
                     temp_A = max(A(1:Prob.N) - A(Prob.N + 1:end), 0);
                     B = B ./ (max(B) + eps);

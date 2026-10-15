@@ -44,7 +44,7 @@ methods
             % initialize Parameter
             uF{t} = 0.5;
             uCR{t} = 0.5;
-            archive{t} = Individual_DE.empty();
+            archive{t} = repmat(Individual_DE(), 0, 0);
         end
 
         while Algo.notTerminated(Prob, population)
@@ -93,7 +93,7 @@ methods
 
     function offspring = Generation(Algo, population, union)
         % get top 100p% individuals
-        [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
+        [~, rank] = sortrows([CVs(population), Objs(population)], [1, 2]);
         pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
         for i = 1:length(population)

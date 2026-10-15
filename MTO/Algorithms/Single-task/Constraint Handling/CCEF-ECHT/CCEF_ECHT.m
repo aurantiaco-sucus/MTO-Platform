@@ -80,7 +80,7 @@ methods
         for t = 1:Prob.T
             STRecord{t} = zeros(1, Algo.STNum) + n0;
             for ch = 1:Algo.CHNum
-                archive{t, ch} = Individual_DE44.empty();
+                archive{t, ch} = repmat(Individual_DE44(), 0, 0);
             end
 
             % Initialize parameters of EC

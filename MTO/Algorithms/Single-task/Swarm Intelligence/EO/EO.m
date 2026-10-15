@@ -62,8 +62,8 @@ methods
                 for i = 1:Prob.N
                     pObj = population{t}(i).Obj;
                     pCV = population{t}(i).CV;
-                    cObjs = Ceq{t}.Objs;
-                    cCVs = Ceq{t}.CVs;
+                    cObjs = Objs(Ceq{t});
+                    cCVs = CVs(Ceq{t});
                     if pCV < cCVs(1) || (pCV == cCVs(1) && pObj < cObjs(1))
                         Ceq{t}(1) = population{t}(i);
                     elseif pCV < cCVs(2) || (pCV == cCVs(2) && pObj < cObjs(2))
@@ -75,7 +75,7 @@ methods
                     end
                 end
                 Ceq_ave = Individual();
-                Ceq_ave.Dec = mean(Ceq{t}.Decs);
+                Ceq_ave.Dec = mean(Decs(Ceq{t}));
                 C_pool = [Ceq{t}, Ceq_ave];
                 ratio = (1 - Algo.FE / Prob.maxFE)^(Algo.A2 * Algo.FE / Prob.maxFE);
                 % Generation

@@ -55,7 +55,7 @@ methods
             Hidx{t} = 1;
             MF{t} = 0.5 .* ones(Algo.H, 1);
             MCR{t} = 0.5 .* ones(Algo.H, 1);
-            archive{t} = Individual_DE.empty();
+            archive{t} = repmat(Individual_DE(), 0, 0);
             pA(t) = 0.5;
         end
 
@@ -78,7 +78,7 @@ methods
                 Fpool(Fpool > 1) = 1;
                 CRpool(CRpool > 1) = 1;
                 CRpool(CRpool < 0) = 0;
-                [~, rank] = sort(population{t}.Objs);
+                [~, rank] = sort(Objs(population{t}));
                 population{t} = population{t}(rank);
                 [~, rank] = sort(CRpool);
                 CRpool = CRpool(rank);
@@ -101,14 +101,14 @@ methods
                 replace = reshape(replace, 1, []);
 
                 % Calculate probability of archive use
-                delta_fa = mean(population{t}(replace & arc_flag).Objs' - offspring(replace & arc_flag).Objs');
-                delta_fp = mean(population{t}(replace & ~arc_flag).Objs' - offspring(replace & ~arc_flag).Objs');
+                delta_fa = mean(Objs(population{t}(replace & arc_flag))' - Objs(offspring(replace & arc_flag))');
+                delta_fp = mean(Objs(population{t}(replace & ~arc_flag))' - Objs(offspring(replace & ~arc_flag))');
                 pA(t) = min(0.9, max(0.1, delta_fa / (delta_fa + delta_fp)));
 
                 % Calculate SF SCR
                 SF = [population{t}(replace).F];
                 SCR = [population{t}(replace).CR];
-                dif = population{t}(replace).Objs' - offspring(replace).Objs';
+                dif = Objs(population{t}(replace))' - Objs(offspring(replace))';
                 dif = dif ./ sum(dif);
                 % update MF MCR
                 if ~isempty(SF)
@@ -130,7 +130,7 @@ methods
 
                 % Linear Population Size Reduction
                 if length(population{t}) > N
-                    [~, rank] = sort(population{t}.Objs);
+                    [~, rank] = sort(Objs(population{t}));
                     population{t} = population{t}(rank(1:N));
                 end
             end
@@ -139,7 +139,7 @@ methods
 
     function [offspring, arc_flag] = Generation(Algo, population, archive, P, pA, CRb)
         % get top 100p% individuals
-        [~, rank] = sort(population.Objs);
+        [~, rank] = sort(Objs(population));
         pop_pbest = rank(1:max(round(P * length(population)), 1));
 
         arc_flag = false(1, length(population));

@@ -51,7 +51,7 @@ methods
             % Generation
             offspring = Algo.Generation(population, Prob.N, Prob.T);
             % Evaluation
-            offspring_temp = Individual_MF.empty();
+            offspring_temp = repmat(Individual_MF(), 0, 0);
             for t = 1:Prob.T
                 offspring_t = offspring([offspring.MFFactor] == t);
                 offspring_t = Algo.Evaluation(offspring_t, Prob, t);
@@ -71,7 +71,7 @@ methods
 
     function offspring = Generation(Algo, population, N, T)
         % knowledge transfer stategy
-        pbest_pop = Individual_MF.empty();
+        pbest_pop = repmat(Individual_MF(), 0, 0);
         for t = 1:T
             for i = 1:N
                 Obj(i) = population(i).MFObj(t);

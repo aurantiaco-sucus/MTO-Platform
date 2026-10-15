@@ -23,7 +23,9 @@ for t = 1:Prob.T
     PopDec = rand(N, maxD); % Decision variables in [0,1]
     CurrentPop(1, N) = Individual_Class();
     DecCell = num2cell(PopDec, 2);
-    [CurrentPop.Dec] = deal(DecCell{:});
+    for i = 1:N
+        CurrentPop(i).Dec = DecCell{i};
+    end
 
     % Evaluate Initial Population
     population{t} = Algo.Evaluation(CurrentPop, Prob, t);

@@ -50,7 +50,7 @@ methods
         lambda = 0.5 * ones(1, Prob.T);
         archive = cell(Prob.T, Prob.T);
         for t = 1:Prob.T
-            [~, best_index] = min(population{t}.Objs);
+            [~, best_index] = min(Objs(population{t}));
             b_x = population{t}(best_index);
             for k = 1:Prob.T
                 if t == k
@@ -72,7 +72,7 @@ methods
             total3 = 0;
             % renew the archive
             for t = 1:Prob.T
-                [~, best_index] = min(population{t}.Objs);
+                [~, best_index] = min(Objs(population{t}));
                 b_x = population{t}(best_index);
                 rt = randi(Prob.T);
                 while rt == t
@@ -82,15 +82,15 @@ methods
                 if b_x.Obj < archive{t, rt}.Obj
                     archive{t, rt} = b_x;
                 end
-                if b_x.Obj < min(population{rt}.Objs)
-                    [~, rt_worst] = max(population{rt}.Objs);
+                if b_x.Obj < min(Objs(population{rt}))
+                    [~, rt_worst] = max(Objs(population{rt}));
                     population{rt}(rt_worst) = b_x;
                 end
             end
             % find task center and task best
             for t = 1:Prob.T
-                task_center{t} = mean(population{t}.Decs, 1);
-                [~, i_best] = min(population{t}.Objs);
+                task_center{t} = mean(Decs(population{t}), 1);
+                [~, i_best] = min(Objs(population{t}));
                 task_best{t} = population{t}(i_best).Dec;
             end
 
@@ -118,7 +118,7 @@ methods
             mean_list = {};
             cov_list = {};
             for t = 1:Prob.T
-                cur_pop = population{t}.Decs;
+                cur_pop = Decs(population{t});
                 for i = 1:Prob.N
                     cur_pop(i, :) = cur_pop(i, :) - task_center{t};
                 end
@@ -169,7 +169,7 @@ methods
             %%
             %evolutionary operation
             for t = 1:Prob.T
-                Q = population{t}.Decs;
+                Q = Decs(population{t});
                 offspring = population{t};
                 strategy = 0;
                 rt = level1{t}(randi(length(level1{t})));
@@ -182,11 +182,11 @@ methods
                 elseif length(level1{t}) ~= 0
                     if pos_rank(rt, t) < dis_rank(rt, t)
                         strategy = 1;
-                        Q1 = population{rt}.Decs;
+                        Q1 = Decs(population{rt});
                         Q2 = [Q; Q1];
                     else
                         strategy = 2;
-                        Q1 = population{rt}.Decs;
+                        Q1 = Decs(population{rt});
                         for i = 1:Prob.N
                             Q1(i, :) = Q1(i, :) - task_center{rt} + task_center{t};
                         end
@@ -245,7 +245,7 @@ methods
                 % Evaluation
                 offspring = Algo.Evaluation(offspring, Prob, t);
                 offspring = [offspring, population{t}];
-                [~, rank] = sort(offspring.Objs, 'ascend');
+                [~, rank] = sort(Objs(offspring), 'ascend');
 
                 for i = 1:Prob.N
                     population{t}(i) = offspring(rank(i));
@@ -260,8 +260,8 @@ methods
                     end
                 end
 
-                task_center{t} = mean(population{t}.Decs);
-                [~, i_best] = min(population{t}.Objs);
+                task_center{t} = mean(Decs(population{t}));
+                [~, i_best] = min(Objs(population{t}));
                 task_best{t} = population{t}(i_best).Dec;
                 rate1 = case1 / (total1 +1e-10);
                 rate2 = (case2 + case3) / (total2 + total3 +1e-10);

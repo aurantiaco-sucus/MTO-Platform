@@ -154,7 +154,7 @@ methods
                 end
                 % Selection
                 if max(Prob.M) == 1
-                    [~, rank] = sort(population{t}.Objs);
+                    [~, rank] = sort(Objs(population{t}));
                 else
                     rank = NSGA2Sort(population{t});
                 end
@@ -162,11 +162,11 @@ methods
                 archive{t} = Algo.updatearchive(archive{t}, population{t}, Prob);
                 pop = population{t}(end:-1:1);
                 if sign == 0
-                    [~, ia] = intersect(pop.Decs, transpop.Decs, 'rows');
+                    [~, ia] = intersect(Decs(pop), Decs(transpop), 'rows');
                     scale(t, m_pt) = sum(ia) / (Prob.N / 2 * (Prob.N + 1));
                     scale(t, m_pt) = 0.1 + scale(t, m_pt) * (0.5 - 0.1);
                 else
-                    [~, ia] = intersect(pop.Decs, offspring.Decs, 'rows');
+                    [~, ia] = intersect(Decs(pop), Decs(offspring), 'rows');
                     scale(t, m_pt) = sum(ia) / (Prob.N / 2 * (Prob.N + 1));
                     scale(t, m_pt) = Algo.minx + scale(t, m_pt) * (0.5 - Algo.minx);
                 end

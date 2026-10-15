@@ -63,8 +63,8 @@ methods
                 offspring = Algo.Evaluation(offspring, Prob, t);
                 % Selection
                 [~, replace] = Selection_Tournament(population{t}, offspring);
-                OldDec = population{t}(replace).Decs;
-                NewDec = offspring(replace).Decs;
+                OldDec = Decs(population{t}(replace));
+                NewDec = Decs(offspring(replace));
                 in_list{t} = [in_list{t}; OldDec];
                 out_list{t} = [out_list{t}; NewDec - OldDec];
                 population{t}(replace) = offspring(replace);

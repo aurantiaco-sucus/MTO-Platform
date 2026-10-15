@@ -73,7 +73,7 @@ methods
         while Algo.notTerminated(Prob, population)
             int_population = population;
             for t = 1:Prob.T
-                parent = Individual_SRE.empty();
+                parent = repmat(Individual_SRE(), 0, 0);
                 for i = 1:length(population)
                     if population(i).MFRank(t) <= Prob.N
                         parent = [parent, population(i)];

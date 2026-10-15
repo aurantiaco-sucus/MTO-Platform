@@ -59,12 +59,12 @@ methods
         Pop = cell(1, Prob.T);
         for t = 1:Prob.T
             Decs = lhsdesign(Prob.N, max(Prob.D));
+            Pop{t} = repmat(Individual_PAE(), 1, Prob.N);
             for i = 1:Prob.N
-                Pop{t}(i) = Individual_PAE();
                 Pop{t}(i).Dec = Decs(i, :);
             end
             Pop{t} = Algo.Evaluation(Pop{t}, Prob, t);
-            [~, rank] = sortrows([Pop{t}.CVs, Pop{t}.Objs], [1, 2]);
+            [~, rank] = sortrows([CVs(Pop{t}), Objs(Pop{t})], [1, 2]);
             Pop{t} = Pop{t}(rank);
         end
         Arc = Pop;
@@ -85,10 +85,10 @@ methods
                 Arc_back = Arc;
                 % Knowledge Transfer
                 for t = 1:Prob.T
-                    [~, rank] = sortrows([DisPop{t}.CVs, DisPop{t}.Objs], [1, 2]);
+                    [~, rank] = sortrows([CVs(DisPop{t}), Objs(DisPop{t})], [1, 2]);
                     DisPop{t} = DisPop{t}(rank);
                     Arc{t} = [Arc{t}, Pop{t}];
-                    [~, rank] = sortrows([Arc{t}.CVs, Arc{t}.Objs], [1, 2]);
+                    [~, rank] = sortrows([CVs(Arc{t}), Objs(Arc{t})], [1, 2]);
                     Arc{t} = Arc{t}(rank);
                 end
 
@@ -101,18 +101,18 @@ methods
                     count = 1;
 
                     % Segment Transfer
-                    sBestDec = Pop{k}(1:Algo.TNum).Decs;
+                    sBestDec = Decs(Pop{k}(1:Algo.TNum));
                     sBestDec = sBestDec(:, 1:Prob.D(k));
-                    tDis = DisPop{t}.Decs;
-                    kDis = DisPop{k}.Decs;
+                    tDis = Decs(DisPop{t});
+                    kDis = Decs(DisPop{k});
                     SegDec = NFC(tDis(:, 1:Prob.D(t)), kDis(:, 1:Prob.D(k)), sBestDec, 'poly');
                     SegDec = [SegDec, rand(Algo.TNum, max(Prob.D) - Prob.D(t))];
 
                     % Stochastic Replacement Transfer
-                    sBestDec = Arc{k}(1:Algo.TNum).Decs;
+                    sBestDec = Decs(Arc{k}(1:Algo.TNum));
                     sBestDec = sBestDec(:, 1:Prob.D(k));
-                    tDis = Arc{t}.Decs;
-                    kDis = Arc{k}.Decs;
+                    tDis = Decs(Arc{t});
+                    kDis = Decs(Arc{k});
                     StoDec = NFC(tDis(:, 1:Prob.D(t)), kDis(:, 1:Prob.D(k)), sBestDec, 'poly');
                     StoDec = [StoDec, rand(Algo.TNum, max(Prob.D) - Prob.D(t))];
 

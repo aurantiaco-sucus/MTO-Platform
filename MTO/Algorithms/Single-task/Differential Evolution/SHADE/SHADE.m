@@ -45,7 +45,7 @@ methods
             Hidx{t} = 1;
             MF{t} = 0.5 .* ones(Algo.H, 1);
             MCR{t} = 0.5 .* ones(Algo.H, 1);
-            archive{t} = Individual_DE.empty();
+            archive{t} = repmat(Individual_DE(), 0, 0);
         end
         while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
@@ -76,8 +76,8 @@ methods
                 % calculate SF SCR
                 SF = [population{t}(replace).F];
                 SCR = [population{t}(replace).CR];
-                dif = population{t}(replace).CVs' - offspring(replace).CVs';
-                dif_obj = population{t}(replace).Objs' - offspring(replace).Objs';
+                dif = CVs(population{t}(replace))' - CVs(offspring(replace))';
+                dif_obj = Objs(population{t}(replace))' - Objs(offspring(replace))';
                 dif_obj(dif_obj < 0) = 0;
                 dif(dif <= 0) = dif_obj(dif <= 0);
                 dif = dif ./ sum(dif);
@@ -104,7 +104,7 @@ methods
 
     function offspring = Generation(Algo, population, union)
         % get top 100p% individuals
-        [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
+        [~, rank] = sortrows([CVs(population), Objs(population)], [1, 2]);
         pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
         for i = 1:length(population)

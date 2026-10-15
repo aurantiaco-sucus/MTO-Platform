@@ -97,7 +97,7 @@ methods (Access = protected)
         x=s.m+s.sigma*(s.B*(s.D.*randn(numel(s.m),count)))';
     end
     function order=rankPopulation(a,p,t,s)
-        pop=s.batch; cv=pop.CVs; obj=pop.Objs;
+        pop=s.batch; cv=CVs(pop); obj=Objs(pop);
         if a.isKG()
             if p.Bounded
                 penalty=arrayfun(@(q)BoundaryViolation(q.Dec,-.05,1.05),pop)';
@@ -118,7 +118,7 @@ methods (Access = protected)
         [~,order]=sortrows([cv,obj],[1,2]);
     end
     function s=updateCMA(~,~,~,s,order)
-        n=numel(s.m); elite=s.batch(order(1:s.mu)).Decs;
+        n=numel(s.m); elite=Decs(s.batch(order(1:s.mu)));
         old=s.m; sigma=s.sigma; s.gen=s.gen+1;
         s.m=s.weights*elite;
         y=(s.m-old)'/sigma;
@@ -156,15 +156,20 @@ methods (Access = protected)
     end
     function k=record(a,t,s,order)
         k=struct('m',s.m,'sigma',s.sigma,'B',s.B,'D',s.D, ...
-            'elite',s.batch(order(1:s.mu)).Decs,'Version',s.gen, ...
+            'elite',Decs(s.batch(order(1:s.mu))),'Version',s.gen, ...
             'Clock',a.Clock,'TaskFE',a.TaskFE(t));
     end
 end
 methods (Abstract, Access = protected)
-    validateSettings(a)
-    s=initializeExtra(a,s)
-    tf=isKG(a)
-    [x,ctx]=makeSamples(a,p,t,s)
-    s=afterUpdate(a,p,t,s,before,order)
+    function validateSettings(a)
+    end
+    function s=initializeExtra(a,s)
+    end
+    function tf=isKG(a)
+    end
+    function [x,ctx]=makeSamples(a,p,t,s)
+    end
+    function s=afterUpdate(a,p,t,s,before,order)
+    end
 end
 end

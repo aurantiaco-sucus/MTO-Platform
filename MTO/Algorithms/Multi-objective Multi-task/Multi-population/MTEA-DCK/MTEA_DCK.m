@@ -70,8 +70,8 @@ methods
                 loser{t}(replace) = winner{t}(replace);
                 winner{t}(replace) = temp;
                 % Winner regions for DKT
-                UniUpperB{t} = max(population{t}(winner{t}).Decs);
-                UniLowerB{t} = min(population{t}(winner{t}).Decs);
+                UniUpperB{t} = max(Decs(population{t}(winner{t})));
+                UniLowerB{t} = min(Decs(population{t}(winner{t})));
             end
 
             for t = 1:Prob.T

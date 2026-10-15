@@ -129,7 +129,7 @@ methods (Access = protected)
             for j = 1:Prob.T
                 % Author code resets the write index for each donor.
                 for i = 1:n(j)
-                    K(i) = Algo.Population{j}(StreamFitnessRoulette(Algo.Population{j}.Objs));
+                    K(i) = Algo.Population{j}(StreamFitnessRoulette(Objs(Algo.Population{j})));
                 end
             end
             batch = parent; k = 1;
@@ -150,7 +150,7 @@ methods (Access = protected)
         parent = Algo.Population{t};
         if context.Transfer
             % Update source quality from offspring improvements over their corresponding parents.
-            success = batch.Objs < parent(1:numel(batch)).Objs;
+            success = Objs(batch) < Objs(parent(1:numel(batch)));
             for j = 1:Prob.T
                 selected = context.Sources(1:numel(batch)) == j; count = sum(selected);
                 if count > 0
@@ -164,10 +164,10 @@ methods (Access = protected)
                     Algo.Shared.QSelect(t, j) / (sum(Algo.Shared.QSelect(t, :)) + 0.001);
             end
         end
-        combined = [batch, parent]; [~, order] = sort(combined.Objs);
+        combined = [batch, parent]; [~, order] = sort(Objs(combined));
         Algo.Population{t} = combined(order(1:Prob.N));
         % Count surviving offspring by decision-vector intersection and track self/transfer success separately.
-        [~, ia] = intersect(Algo.Population{t}.Decs, batch.Decs, 'rows');
+        [~, ia] = intersect(Decs(Algo.Population{t}), Decs(batch), 'rows');
         if context.Transfer
             Algo.Shared.QOther(t) = Algo.w * Algo.Shared.QOther(t) + (1 - Algo.w) * numel(ia) / Prob.N;
         else

@@ -59,7 +59,7 @@ methods
 
                 % Calculate the fitness
                 Q = [population{t}, offspring];
-                PopObj = Q.Objs + repmat(1e-6 * sum((cat(1, Q.x) - Q.Decs).^2, 2), 1, Prob.M(t));
+                PopObj = Objs(Q) + repmat(1e-6 * sum((cat(1, Q.x) - Decs(Q)).^2, 2), 1, Prob.M(t));
                 FrontNo = NDSort(PopObj, inf);
                 CrowdDis = CrowdingDistance(PopObj, FrontNo);
                 [~, rank] = sortrows([FrontNo; -CrowdDis]');

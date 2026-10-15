@@ -1,7 +1,8 @@
 function MTOData = MTO_CMD(AlgoCell, ProbCell, varargin)
-%% MTO_CMD - Hybrid command-line runner for MToP (preserves original data structure)
-% Supports both positional and Name-Value pair style inputs,
-% and preserves the original result data layout.
+%% MTO_CMD - Hybrid command-line runner for MToP
+% Supports positional and Name-Value pair inputs and preserves the result data layout.
+% In Octave, anonymous problem handles are stored as source strings in the MAT-file copy;
+% the returned MTOData retains the live handles.
 %
 % Examples:
 %   MTO_CMD({MFEA, MFDE},{CMT1, CMT2})
@@ -167,7 +168,28 @@ end
 %% ------------------- Save ----------------------------------------------
 Data.Results = MakeCMDGenEqual(Results);
 MTOData = Data;
-save(Save_Name, 'MTOData');
+if exist('OCTAVE_VERSION', 'builtin')
+    % Octave cannot serialize anonymous handles that capture a handle-class Problem
+    % without recursively converting that object graph. Keep live handles in the
+    % return value, but save their source text in the Octave MAT-file copy.
+    MTODataForSave = MTOData;
+    for prob = 1:numel(MTODataForSave.Problems)
+        if isfield(MTODataForSave.Problems, 'Fnc')
+            fnc = MTODataForSave.Problems(prob).Fnc;
+            for t = 1:numel(fnc)
+                if isa(fnc{t}, 'function_handle')
+                    fnc{t} = func2str(fnc{t});
+                end
+            end
+            MTODataForSave.Problems(prob).Fnc = fnc;
+        end
+    end
+    MTOData = MTODataForSave;
+    save(Save_Name, 'MTOData');
+    MTOData = Data;
+else
+    save(Save_Name, 'MTOData');
+end
 fprintf('** Results saved to "%s"\n', Save_Name);
 
 end

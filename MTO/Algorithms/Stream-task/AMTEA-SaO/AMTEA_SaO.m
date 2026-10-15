@@ -108,7 +108,7 @@ methods (Access = protected)
 
     function [batch, context] = makeBatch(Algo, Prob, t, donors)
         parent = Algo.Population{t}; sizes = Algo.Shared.Sizes(t, :);
-        context = struct('Sizes', sizes, 'Obj', median(parent.Objs), 'CV', median(parent.CVs));
+        context = struct('Sizes', sizes, 'Obj', median(Objs(parent)), 'CV', median(CVs(parent)));
         % Pause transfer in the final memory window to measure each solver's own performance.
         phase = mod(Algo.TaskFE(t), Algo.SaGap) + Prob.N;
         if Algo.TNum > 0 && phase < Algo.SaGap - Algo.Memory && ...
@@ -118,7 +118,7 @@ methods (Access = protected)
             parent(randperm(Prob.N, numel(transfer))) = transfer;
         end
         % Place GA offspring before DE offspring and retain the split for selection.
-        batch = Individual.empty();
+        batch = repmat(Individual(), 0, 0);
         if sizes(1) > 0, batch = Algo.Generation_GA(parent(1:sizes(1))); end
         if sizes(2) > 0, batch = [batch, Algo.Generation_DE(parent(sizes(1) + 1:end))]; end
     end
@@ -137,8 +137,8 @@ methods (Access = protected)
         for st = 1:2
             idx = sum(context.Sizes(1:st - 1)) + (1:context.Sizes(st));
             p = Algo.Population{t}(idx);
-            success(st) = sum(p.CVs < context.CV | (p.CVs == context.CV & p.Objs < context.Obj));
-            failure(st) = sum(p.CVs > context.CV | (p.CVs == context.CV & p.Objs > context.Obj));
+            success(st) = sum(CVs(p) < context.CV | (CVs(p) == context.CV & Objs(p) < context.Obj));
+            failure(st) = sum(CVs(p) > context.CV | (CVs(p) == context.CV & Objs(p) > context.Obj));
         end
         % Keep a separate Memory-FE history window for each task.
         fe = [Algo.Shared.HistoryFE{t}, Algo.TaskFE(t)];

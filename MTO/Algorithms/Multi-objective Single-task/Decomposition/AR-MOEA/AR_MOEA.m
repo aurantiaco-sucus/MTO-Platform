@@ -54,7 +54,7 @@ methods
             % Generate the sampling points and random population
             population{t} = Initialization_One(Algo, Prob, t, Individual, Prob.N);
             W{t} = UniformPoint(Prob.N, Prob.M(t));
-            [archive{t}, ref_point{t}, range{t}] = Algo.UpdateRefPoint(population{t}(population{t}.CVs <= 0).Objs, W{t}, []);
+            [archive{t}, ref_point{t}, range{t}] = Algo.UpdateRefPoint(Objs(population{t}(CVs(population{t}) <= 0)), W{t}, []);
         end
 
         while Algo.notTerminated(Prob, population)
@@ -63,7 +63,7 @@ methods
                 offspring = Algo.Generation(population{t}(mating_pool));
                 offspring = Algo.Evaluation(offspring, Prob, t);
 
-                [archive{t}, ref_point{t}, range{t}] = Algo.UpdateRefPoint([archive{t}; offspring(offspring.CVs <= 0).Objs], W{t}, range{t});
+                [archive{t}, ref_point{t}, range{t}] = Algo.UpdateRefPoint([archive{t}; Objs(offspring(CVs(offspring) <= 0))], W{t}, range{t});
 
                 [population{t}, range{t}] = Algo.EnvironmentalSelection([population{t}, offspring], ref_point{t}, range{t}, Prob.N);
             end
@@ -177,13 +177,13 @@ methods
         %--------------------------------------------------------------------------
 
         %% Calculate the degree of violation of each solution
-        CV = Population.CVs;
+        CV = CVs(Population);
 
         %% Calculate the fitness of each feasible solution based on IGD-NS
         if sum(CV == 0) > 1
             % Calculate the distance between each solution and point
             N = sum(CV == 0);
-            Distance = Algo.CalDistance(Population(CV == 0).Objs - repmat(Range(1, :), N, 1), RefPoint);
+            Distance = Algo.CalDistance(Objs(Population(CV == 0)) - repmat(Range(1, :), N, 1), RefPoint);
             Convergence = min(Distance, [], 2);
             [dis, rank] = sort(Distance, 1);
             % Calculate the fitness of noncontributing solutions
@@ -224,20 +224,20 @@ methods
         % Computational Intelligence Magazine, 2017, 12(4): 73-87".
         %--------------------------------------------------------------------------
 
-        CV = Population.CVs;
+        CV = CVs(Population);
         if sum(CV == 0) > N
             %% Selection among feasible solutions
             Population = Population(CV == 0);
             % Non-dominated sorting
-            [FrontNo, MaxFNo] = NDSort(Population.Objs, N);
+            [FrontNo, MaxFNo] = NDSort(Objs(Population), N);
             Next = FrontNo < MaxFNo;
             % Select the solutions in the last front
             Last = find(FrontNo == MaxFNo);
-            Choose = Algo.LastSelection(Population(Last).Objs, RefPoint, Range, N - sum(Next));
+            Choose = Algo.LastSelection(Objs(Population(Last)), RefPoint, Range, N - sum(Next));
             Next(Last(Choose)) = true;
             Population = Population(Next);
             % Update the range for normalization
-            Range(2, :) = max(Population.Objs, [], 1);
+            Range(2, :) = max(Objs(Population), [], 1);
             Range(2, Range(2, :) - Range(1, :) < 1e-6) = 1;
         else
             %% Selection including infeasible solutions

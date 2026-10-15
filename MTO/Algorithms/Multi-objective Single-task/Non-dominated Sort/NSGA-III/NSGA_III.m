@@ -54,18 +54,18 @@ methods
         for t = 1:Prob.T
             [Z{t}, N{t}] = UniformPoint(Prob.N, Prob.M(t));
             population{t} = Initialization_One(Algo, Prob, t, Individual, N{t});
-            Zmin{t} = min(population{t}(population{t}.CVs <= 0).Objs, [], 1);
+            Zmin{t} = min(Objs(population{t}(CVs(population{t}) <= 0)), [], 1);
         end
 
         while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 % Generation
-                mating_pool = TournamentSelection(2, N{t}, population{t}.CVs);
+                mating_pool = TournamentSelection(2, N{t}, CVs(population{t}));
                 offspring = Algo.Generation(population{t}(mating_pool));
                 % Evaluation
                 offspring = Algo.Evaluation(offspring, Prob, t);
                 % Selection
-                Zmin{t} = min([Zmin{t}; offspring(offspring.CVs <= 0).Objs], [], 1);
+                Zmin{t} = min([Zmin{t}; Objs(offspring(CVs(offspring) <= 0))], [], 1);
                 population{t} = Algo.EnvironmentalSelection([population{t}, offspring], N{t}, Z{t}, Zmin{t});
             end
         end
@@ -96,12 +96,12 @@ methods
         end
 
         %% Non-dominated sorting
-        [FrontNo, MaxFNo] = NDSort(population.Objs, population.CVs, N);
+        [FrontNo, MaxFNo] = NDSort(Objs(population), CVs(population), N);
         Next = FrontNo < MaxFNo;
 
         %% Select the solutions in the last front
         Last = find(FrontNo == MaxFNo);
-        Choose = Algo.LastSelection(population(Next).Objs, population(Last).Objs, N - sum(Next), Z, Zmin);
+        Choose = Algo.LastSelection(Objs(population(Next)), Objs(population(Last)), N - sum(Next), Z, Zmin);
         Next(Last(Choose)) = true;
         % population for next generation
         population = population(Next);

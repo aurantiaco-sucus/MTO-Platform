@@ -52,14 +52,14 @@ methods
                 end
             end
             for t = 1:Prob.T
-                Dect = population([population.MFFactor] == t).Decs;
+                Dect = Decs(population([population.MFFactor] == t));
                 maxDec{t} = max(Dect);
                 minDec{t} = min(Dect);
             end
             % Generation
             [offspring, offspring2] = Algo.Generation(Prob, population, sigma, maxDec, minDec);
             % Evaluation
-            offspring_temp = Individual_MF.empty();
+            offspring_temp = repmat(Individual_MF(), 0, 0);
             for t = 1:Prob.T
                 offspring_t = offspring([offspring.MFFactor] == t);
                 offspring_t = [offspring_t, offspring2([offspring2.MFFactor] == t)];

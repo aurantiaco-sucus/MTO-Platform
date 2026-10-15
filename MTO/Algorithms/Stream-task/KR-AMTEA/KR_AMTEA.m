@@ -63,7 +63,7 @@ methods (Access = protected)
         % AAM stores transfer probabilities; HM stores transfer fractions for target/source pairs.
         Algo.Shared.AAM = (Algo.Lb + Algo.Ub) / 2 * (ones(Prob.T) - eye(Prob.T));
         Algo.Shared.HM = Algo.pTransfer * ones(Prob.T);
-        Algo.Shared.Archive = repmat({Individual_DE.empty(1, 0)}, 1, Prob.T);
+        Algo.Shared.Archive = repmat({repmat(Individual_DE(), 1, 0)}, 1, Prob.T);
         op = KR_MTEA(); % Same GA/DE variation operators, without evaluation.
         op.mu = Algo.mu; op.mum = Algo.mum;
         Algo.Shared.Variation = op;
@@ -91,7 +91,7 @@ methods (Access = protected)
             if rand > 0.9, option = 0; end
             nTransfer = round(Algo.Shared.HM(t, source) * Prob.N);
             temp = parents(end:-1:1);
-            mapped = KR_AMTEA_Map(Algo.Population{source}.Decs, parents.Decs, nTransfer, option);
+            mapped = KR_AMTEA_Map(Decs(Algo.Population{source}), Decs(parents), nTransfer, option);
             for i = 1:Prob.N
                 if i <= nTransfer, temp(i) = parents(i); temp(i).Dec = mapped(i, :); end
                 temp(i).F = Algo.F; temp(i).CR = Algo.CR;
@@ -115,11 +115,11 @@ methods (Access = protected)
         end
         offspring = s.Batch(1:s.Offset);
         combined = [parents, offspring];
-        [~, order] = sort(combined.Objs);
+        [~, order] = sort(Objs(combined));
         Algo.Population{t} = combined(order(1:Prob.N));
         pop = Algo.Population{t}(end:-1:1);
         % Reversing the population gives better survivors larger indices for the HM update.
-        [~, ia] = intersect(pop.Decs, offspring.Decs, 'rows');
+        [~, ia] = intersect(Decs(pop), Decs(offspring), 'rows');
         % Preserve the author's archive rule: replace leading slots with probability 0.3.
         for i = 1:numel(ia)
             if rand < 0.3, Algo.Shared.Archive{t}(i) = pop(ia(i)); end
@@ -139,7 +139,7 @@ methods (Access = protected)
             Algo.Shared.PresentTransfers(t, s.Source) = ...
                 Algo.Shared.PresentTransfers(t, s.Source) + s.Transfer;
         end
-        s.Batch = Individual_DE.empty(1, 0); s.Offset = 0;
+        s.Batch = repmat(Individual_DE(), 1, 0); s.Offset = 0;
         Algo.State{t} = s;
     end
 end
@@ -155,7 +155,7 @@ methods (Access = private)
             donors = donors(1:min(numel(donors), Prob.N));
             batch = repmat(Individual_DE(), 1, Prob.N);
             for i = 1:Prob.N, batch(i).Dec = rand(1, Prob.D(t)); end
-            Algo.Population{t} = Individual_DE.empty(1, 0);
+            Algo.Population{t} = repmat(Individual_DE(), 1, 0);
             Algo.State{t} = struct('Stage', 1, 'Offset', 0, 'Batch', batch, ...
                 'Donors', donors, 'Source', t, 'Option', 2, 'Transfer', 0);
         end
@@ -167,7 +167,7 @@ methods (Access = private)
             s.Offset = s.Offset + numel(pop);
             if s.Offset == Prob.N
                 Algo.Shared.Archive{t} = Algo.Population{t};
-                s.Offset = 0; s.Batch = Individual_DE.empty(1, 0);
+                s.Offset = 0; s.Batch = repmat(Individual_DE(), 1, 0);
                 if isempty(s.Donors), s.Stage = 4; else, s.Stage = 2; end
             end
         elseif s.Stage == 2
@@ -182,7 +182,7 @@ methods (Access = private)
             if i == numel(s.Donors)
                 % Preserve the released code's loop bounds (including overwrite of slot L).
                 for j = numel(s.Donors):round(Prob.N / 2) - numel(s.Donors)
-                    scores = Algo.Population{t}(1:numel(s.Donors)).Objs;
+                    scores = Objs(Algo.Population{t}(1:numel(s.Donors)));
                     weights = 1 ./ (scores - min(min(scores), 0) +1e-6);
                     source = s.Donors(Algo.roulette(weights));
                     ids = randsample(Prob.D(source), Prob.D(t), Prob.D(source) < Prob.D(t));

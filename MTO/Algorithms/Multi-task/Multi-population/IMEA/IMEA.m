@@ -59,7 +59,7 @@ methods
                 parent = population{t};
                 if Algo.TNum > 0 && mod(Algo.Gen, Algo.TGap) == 0
                     transfer_num = round(Algo.TNum ./ (Prob.T - 1));
-                    transfer_pop = Individual.empty();
+                    transfer_pop = repmat(Individual(), 0, 0);
                     for k = 1:Prob.T
                         if t == k
                             continue;
@@ -68,7 +68,7 @@ methods
                         tmp_pop = population{k}(transfer_idx);
                         transfer_pop = [transfer_pop, tmp_pop];
                     end
-                    [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                    [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                     parent(rank(end - length(transfer_pop) + 1:end)) = transfer_pop;
                 end
                 % Generation

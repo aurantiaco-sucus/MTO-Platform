@@ -104,7 +104,7 @@ methods
         end
         for t = 1:Prob.T
             M = Prob.M(t);
-            Obj = Pop{t}.Objs;
+            Obj = Objs(Pop{t});
             if M == 2
                 set(obj.hplot{t}, 'XData', Obj(:, 1), 'YData', Obj(:, 2));
             elseif M == 3

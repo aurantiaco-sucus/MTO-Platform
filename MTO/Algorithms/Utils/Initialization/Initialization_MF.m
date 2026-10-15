@@ -18,22 +18,28 @@ maxD = max(Prob.D);
 population(1, TotalN) = Individual_Class();
 PopDec = rand(TotalN, maxD); % Decision variables in [0,1]
 DecCell = num2cell(PopDec, 2);
-[population.Dec] = deal(DecCell{:});
+for i = 1:TotalN
+    population(i).Dec = DecCell{i};
+end
 
 InitVec = inf(1, Prob.T);
 InitCell = repmat({InitVec}, 1, TotalN);
-[population.MFObj] = deal(InitCell{:});
-[population.MFCV] = deal(InitCell{:});
+for i = 1:TotalN
+    population(i).MFObj = InitCell{i};
+end
+for i = 1:TotalN
+    population(i).MFCV = InitCell{i};
+end
 
 for t = 1:Prob.T
     % Evaluate Initial Population
     population = Algo.Evaluation(population, Prob, t);
 
-    Objs = population.Objs;
-    CVs = population.CVs;
+    ObjMatrix = Objs(population);
+    CVVector = CVs(population);
     % Store MFObj and MFCV for single-objective problems
-    CurrentObj = Objs(:, 1);
-    CurrentCV = CVs;
+    CurrentObj = ObjMatrix(:, 1);
+    CurrentCV = CVVector;
 
     for i = 1:TotalN
         population(i).MFObj(t) = CurrentObj(i);
@@ -59,7 +65,9 @@ for t = 1:Prob.T
 end
 
 RankCell = num2cell(MatRank, 2);
-[population.MFRank] = deal(RankCell{:});
+for i = 1:TotalN
+    population(i).MFRank = RankCell{i};
+end
 
 % Assign skill factors based on ranks
 record = zeros(1, Prob.T);
@@ -77,7 +85,9 @@ for i = 1:TotalN
 end
 
 FactorCell = num2cell(FinalFactor);
-[population.MFFactor] = deal(FactorCell{:});
+for i = 1:TotalN
+    population(i).MFFactor = FactorCell{i};
+end
 for i = 1:TotalN
     f = FinalFactor(i);
     population(i).Obj = population(i).MFObj(f);

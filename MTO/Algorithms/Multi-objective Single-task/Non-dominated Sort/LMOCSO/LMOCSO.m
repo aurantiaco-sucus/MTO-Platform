@@ -43,7 +43,7 @@ methods
 
         while Algo.notTerminated(Prob, archive)
             for t = 1:Prob.T
-                fitness = Algo.calFitness(population{t}.Objs);
+                fitness = Algo.calFitness(Objs(population{t}));
                 if length(population{t}) >= 2
                     rank = randperm(length(population{t}), floor(length(population{t}) / 2) * 2);
                 else
@@ -103,8 +103,8 @@ methods
     function population = EnvironmentalSelection(Algo, population, V, theta)
         % The environmental selection of LMOCSO
 
-        population = population(NDSort(population.Objs, 1) == 1);
-        PopObj = population.Objs;
+        population = population(NDSort(Objs(population), 1) == 1);
+        PopObj = Objs(population);
         [N, M] = size(PopObj);
         NV = size(V, 1);
 
@@ -112,7 +112,7 @@ methods
         PopObj = PopObj - repmat(min(PopObj, [], 1), N, 1);
 
         %% Calculate the degree of violation of each solution
-        CV = population.CVs;
+        CV = CVs(population);
 
         %% Calculate the smallest angle value between each vector and others
         cosine = 1 - pdist2(V, V, 'cosine');

@@ -17,24 +17,25 @@ properties (Constant)
 end
 
 properties
-    Name char % Algorithm/Problem Name
+    Name % Algorithm/Problem Name
 
-    T double % Tasks number
-    N double % Population size for each task
-    M double % Objective number for each task
-    D double % Dimension for each task
-    maxFE double % Maximum evaluations
+    T % Tasks number
+    N % Population size for each task
+    M % Objective number for each task
+    D % Dimension for each task
+    maxFE % Maximum evaluations
 
-    Fnc cell % Function handle for each task
-    Lb cell % Lower Bound for each task
-    Ub cell % Upper Bound for each task
+    Fnc % Function handle for each task
+    Lb % Lower Bound for each task
+    Ub % Upper Bound for each task
 
-    Bounded logical = true % Is the problem bounded
-    ReEvalBest logical = false % Re-evaluate the best solution
+    Bounded = true % Is the problem bounded
+    ReEvalBest = false % Re-evaluate the best solution
 end
 
 methods (Abstract)
-    setTasks(Prob)
+    function setTasks(Prob)
+    end
 end
 
 methods

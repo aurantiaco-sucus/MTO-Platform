@@ -77,7 +77,7 @@ methods
                 population{t} = Algo.EnvironmentalSelection([population{t}, offspring], V{t}, (Algo.FE / Prob.maxFE)^Algo.Alpha);
                 archive{t}(1:length(population{t})) = population{t};
                 if flag
-                    PopObj = population{t}.Objs;
+                    PopObj = Objs(population{t});
                     V{t}(1:N{t}, :) = V0{t} .* repmat(max(PopObj, [], 1) - min(PopObj, [], 1), size(V0{t}, 1), 1);
                 end
             end
@@ -96,7 +96,7 @@ methods
         % Computational Intelligence Magazine, 2017, 12(4): 73-87".
         %--------------------------------------------------------------------------
 
-        PopObj = Population.Objs;
+        PopObj = Objs(Population);
         [N, M] = size(PopObj);
         NV = size(V, 1);
 
@@ -104,7 +104,7 @@ methods
         PopObj = PopObj - repmat(min(PopObj, [], 1), N, 1);
 
         %% Calculate the degree of violation of each solution
-        CV = Population.CVs;
+        CV = CVs(Population);
 
         %% Calculate the smallest angle value between each vector and others
         cosine = 1 - pdist2(V, V, 'cosine');

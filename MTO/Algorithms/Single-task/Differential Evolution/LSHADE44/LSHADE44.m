@@ -58,7 +58,7 @@ methods
                 MF{t, k} = 0.5 .* ones(Algo.H, 1);
                 MCR{t, k} = 0.5 .* ones(Algo.H, 1);
             end
-            archive{t} = Individual_DE44.empty();
+            archive{t} = repmat(Individual_DE44(), 0, 0);
         end
 
         while Algo.notTerminated(Prob, population)
@@ -111,8 +111,8 @@ methods
                     k_idx = [population{t}.ST] == k;
                     SF = [population{t}(replace & k_idx).F];
                     SCR = [population{t}(replace & k_idx).CR];
-                    dif = population{t}(replace & k_idx).CVs' - offspring(replace & k_idx).CVs';
-                    dif_obj = population{t}(replace & k_idx).Objs' - offspring(replace & k_idx).Objs';
+                    dif = CVs(population{t}(replace & k_idx))' - CVs(offspring(replace & k_idx))';
+                    dif_obj = Objs(population{t}(replace & k_idx))' - Objs(offspring(replace & k_idx))';
                     dif_obj(dif_obj < 0) = 0;
                     dif(dif <= 0) = dif_obj(dif <= 0);
                     dif = dif ./ sum(dif);
@@ -136,7 +136,7 @@ methods
 
                 % Linear Population Size Reduction
                 if length(population{t}) > N
-                    [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                    [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                     population{t} = population{t}(rank(1:N));
                 end
             end
@@ -145,7 +145,7 @@ methods
 
     function offspring = Generation(Algo, population, union)
         % get top 100p% individuals
-        [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
+        [~, rank] = sortrows([CVs(population), Objs(population)], [1, 2]);
         pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
         for i = 1:length(population)
@@ -183,7 +183,7 @@ methods
                 case 3 % randrl + bin
                     A = randperm(length(population), 4);
                     A(A == i) = []; idx = A(1:3);
-                    [~, rank_temp] = sortrows([population(idx).CVs, population(idx).Objs], [1, 2]);
+                    [~, rank_temp] = sortrows([CVs(population(idx)), Objs(population(idx))], [1, 2]);
                     x1 = idx(rank_temp(1));
                     if rand < 0.5
                         x2 = idx(rank_temp(2)); x3 = idx(rank_temp(3));
@@ -196,7 +196,7 @@ methods
                 case 4 % randrl + exp
                     A = randperm(length(population), 4);
                     A(A == i) = []; idx = A(1:3);
-                    [~, rank_temp] = sortrows([population(idx).CVs, population(idx).Objs], [1, 2]);
+                    [~, rank_temp] = sortrows([CVs(population(idx)), Objs(population(idx))], [1, 2]);
                     x1 = idx(rank_temp(1));
                     if rand < 0.5
                         x2 = idx(rank_temp(2)); x3 = idx(rank_temp(3));

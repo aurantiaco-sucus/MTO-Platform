@@ -19,10 +19,10 @@ else
 end
 
 %% Calculate the fitness of each solution
-Cons = population.Cons;
+Cons = Cons(population);
 CVs = sum(max(0, Cons), 2);
 CVs(CVs < Ep) = 0; % Epsilon Constraint
-Fitness = CalFitness(population.Objs, CVs);
+Fitness = CalFitness(Objs(population), CVs);
 FitAll = Fitness;
 
 %% Environmental selection
@@ -31,7 +31,7 @@ if sum(Next) < N
     [~, Rank] = sort(Fitness);
     Next(Rank(1:N)) = true;
 elseif sum(Next) > N
-    Del = Truncation(population(Next).Objs, sum(Next) - N);
+    Del = Truncation(Objs(population(Next)), sum(Next) - N);
     Temp = find(Next);
     Next(Temp(Del)) = false;
 end

@@ -65,9 +65,9 @@ methods
         taskRange = cell(1, Prob.T);
         for t = 1:Prob.T
             % The official ABOM starts from a fitness-sorted parent population.
-            [~, order] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+            [~, order] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
             population{t} = population{t}(order);
-            parentDec = population{t}.Decs;
+            parentDec = Decs(population{t});
             parentDec = parentDec(:, 1:Prob.D(t));
 
             % ABOM operates in the task's native search space. MToP stores
@@ -127,7 +127,7 @@ methods
                 % used by GA/DE in MToP. It also preserves MToP's lexicographic
                 % constraint handling for ABOM.
                 population{t} = Selection_Elit(population{t}, offspring);
-                selectedDec = population{t}.Decs;
+                selectedDec = Decs(population{t});
                 selectedDec = selectedDec(:, 1:Prob.D(t));
                 selectedNative = selectedDec .* taskRange{t} + lowerBound{t};
                 selectedPy = py.numpy.array(selectedNative, dtype = py.numpy.float64);

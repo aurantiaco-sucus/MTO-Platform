@@ -49,7 +49,7 @@ methods
         while Algo.notTerminated(Prob, population)
             PopDec = {};
             for t = 1:Prob.T
-                PopDec{t} = population([population.MFFactor] == t).Decs;
+                PopDec{t} = Decs(population([population.MFFactor] == t));
                 Pm(t, :) = mean(PopDec{t}, 1);
                 PopDec{t} = PopDec{t} - repmat(Pm(t, :), size(PopDec{t}, 1), 1);
             end
@@ -81,7 +81,7 @@ methods
             % Generation
             offspring = Algo.Generation(population, Pm, QQ, dim, M, Prob.T);
             % Evaluation
-            offspring_temp = Individual_MF.empty();
+            offspring_temp = repmat(Individual_MF(), 0, 0);
             for t = 1:Prob.T
                 offspring_t = offspring([offspring.MFFactor] == t);
                 offspring_t = Algo.Evaluation(offspring_t, Prob, t);

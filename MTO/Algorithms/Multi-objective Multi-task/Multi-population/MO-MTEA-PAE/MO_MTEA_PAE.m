@@ -60,8 +60,8 @@ methods
         Fit = cell(1, Prob.T);
         for t = 1:Prob.T
             Decs = lhsdesign(Prob.N, max(Prob.D));
+            Pop{t} = repmat(Individual_PAE(), 1, Prob.N);
             for i = 1:Prob.N
-                Pop{t}(i) = Individual_PAE();
                 Pop{t}(i).Dec = Decs(i, :);
             end
             Pop{t} = Algo.Evaluation(Pop{t}, Prob, t);
@@ -100,22 +100,22 @@ methods
 
                     % Segment Transfer
                     if sum(Fit{k} < 1) < Algo.TNum
-                        sBestDec = Pop{k}(1:Algo.TNum).Decs;
+                        sBestDec = Decs(Pop{k}(1:Algo.TNum));
                     else
                         idx = find(Fit{k} < 1);
-                        sBestDec = Pop{k}(idx(randperm(length(idx), Algo.TNum))).Decs;
+                        sBestDec = Decs(Pop{k}(idx(randperm(length(idx), Algo.TNum))));
                     end
                     sBestDec = sBestDec(:, 1:Prob.D(k));
-                    tDis = DisPop{t}.Decs;
-                    kDis = DisPop{k}.Decs;
+                    tDis = Decs(DisPop{t});
+                    kDis = Decs(DisPop{k});
                     SegDec = NFC(tDis(:, 1:Prob.D(t)), kDis(:, 1:Prob.D(k)), sBestDec, 'poly');
                     SegDec = [SegDec, rand(Algo.TNum, max(Prob.D) - Prob.D(t))];
 
                     % Stochastic Replacement Transfer
-                    sBestDec = Arc{k}(1:Algo.TNum).Decs;
+                    sBestDec = Decs(Arc{k}(1:Algo.TNum));
                     sBestDec = sBestDec(:, 1:Prob.D(k));
-                    tDis = Arc{t}.Decs;
-                    kDis = Arc{k}.Decs;
+                    tDis = Decs(Arc{t});
+                    kDis = Decs(Arc{k});
                     StoDec = NFC(tDis(:, 1:Prob.D(t)), kDis(:, 1:Prob.D(k)), sBestDec, 'poly');
                     StoDec = [StoDec, rand(Algo.TNum, max(Prob.D) - Prob.D(t))];
 

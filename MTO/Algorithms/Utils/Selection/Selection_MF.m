@@ -13,14 +13,14 @@ function population = Selection_MF(population, offspring, Prob)
 
 pool = [population, offspring];
 Factors = [pool.MFFactor];
-Objs = pool.Objs;
-CVs = pool.CVs;
+ObjMatrix = Objs(pool);
+CVVector = CVs(pool);
 
 NextIdx = zeros(1, min(numel(pool), Prob.N * Prob.T));
 nextCount = 0;
 for t = 1:Prob.T
     idx = find(Factors == t);
-    [~, rank] = sortrows([CVs(idx), Objs(idx, :)]);
+    [~, rank] = sortrows([CVVector(idx), ObjMatrix(idx, :)]);
     count = min(length(rank), Prob.N);
     selected = idx(rank(1:count));
     NextIdx(nextCount + (1:count)) = selected;

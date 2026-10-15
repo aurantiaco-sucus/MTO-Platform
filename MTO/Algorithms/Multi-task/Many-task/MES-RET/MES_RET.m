@@ -188,7 +188,7 @@ methods
             m = CMA.agg_mdec(1:eff_dim);
             if any(isnan(m)), m = CMA.mDec{t}; end
             % Calculate the average step size in the effective dimension
-            decs = CMA.sample{t}.Decs;
+            decs = Decs(CMA.sample{t});
             mStep_partial = mean(sqrt(sum((decs(:, 1:eff_dim) - CMA.mDec{t}(1:eff_dim)).^2, 2)));
             % Generate tr_num samples toward the mean in the effective dimension
             for i = 1:tr_num
@@ -273,7 +273,7 @@ methods
             CMA.gBest{t} = [];
             CMA = Algo.SamplingAndTransfer(Prob, CMA, t);
             CMA = Algo.ParameterUpdate(Prob, CMA, t);
-            temp_cv = CMA.sample{t}.CVs;
+            temp_cv = CVs(CMA.sample{t});
             [~, idx] = sort(temp_cv);
             CMA.cv_max{t} = temp_cv(idx(round(0.2 * length(temp_cv))));
             CMA.gBest{t} = Algo.Best{t};
@@ -286,7 +286,7 @@ methods
         % Update CMA parameters
         % Update mean decision variables
         oldDec = CMA.mDec{t};
-        rankDecs = CMA.sample{t}(CMA.rank{t}(1:CMA.mu{t})).Decs;
+        rankDecs = Decs(CMA.sample{t}(CMA.rank{t}(1:CMA.mu{t})));
         rankDecs = rankDecs(:, 1:CMA.n{t});
         CMA.mDec{t} = CMA.weights{t} * rankDecs;
         Algo.Mean{t} = CMA.mDec{t};
@@ -365,7 +365,7 @@ methods
         sample = Algo.Evaluation(sample, Prob, t);
 
         % Epsilon constraint handling for constrained problems
-        CVs = sample.CVs;
+        CVs = CVs(sample);
         if Algo.FE < 0.3 * Prob.maxFE && cv_max > 0
             Ep = cv_max * ((1 - Algo.FE / (0.3 * Prob.maxFE))^8);
             CVs(CVs < Ep) = 0;
@@ -383,10 +383,10 @@ methods
                     penalty(i) = violation * cvScale;
                 end
                 % get rank based on constraint violation
-                [~, rank] = sortrows([CVs + penalty, sample.Objs], [1, 2]);
+                [~, rank] = sortrows([CVs + penalty, Objs(sample)], [1, 2]);
             else
                 % Penalty method
-                currentObjs = sample.Objs;
+                currentObjs = Objs(sample);
                 objScale = max(abs(currentObjs));
                 if objScale < 1, objScale = 1; end
                 penalty = zeros(length(sample), 1);
@@ -395,10 +395,10 @@ methods
                     penalty(i) = violation * objScale;
                 end
                 % get rank based on constraint and objective
-                [~, rank] = sortrows([CVs, sample.Objs + penalty], [1, 2]);
+                [~, rank] = sortrows([CVs, Objs(sample) + penalty], [1, 2]);
             end
         else
-            [~, rank] = sortrows([CVs, sample.Objs], [1, 2]);
+            [~, rank] = sortrows([CVs, Objs(sample)], [1, 2]);
         end
     end
 end

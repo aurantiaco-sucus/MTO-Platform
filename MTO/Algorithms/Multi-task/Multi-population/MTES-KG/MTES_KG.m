@@ -92,7 +92,7 @@ methods
                 for i = 1:lambda
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (B{t} * (D{t} .* randn(n, 1)))';
                 end
-                mStep{t} = mean(sqrt(sum((sample{t}.Decs - mDec{t}).^2, 2)));
+                mStep{t} = mean(sqrt(sum((Decs(sample{t}) - mDec{t}).^2, 2)));
             end
 
             %% Sample external solutions
@@ -119,7 +119,7 @@ methods
                     else
                         % Function shape knowledge-guided external sampling (SaS)
                         idx = 1:mu; idx(randi(end)) = [];
-                        vec = mean(oldsample{k}(rank{k}(idx)).Decs);
+                        vec = mean(Decs(oldsample{k}(rank{k}(idx))));
                         vec = (vec - mDec{k}) ./ sigma{k};
                         sample{t}(i).Dec = mDec{t} + sigma{t} * (B{t} * (D{t} .* (B{k}' * (D{k}.^-1 .* vec'))))';
                     end
@@ -149,14 +149,14 @@ methods
                 % Update CMA parameters
                 % Update mean decision variables
                 oldDec = mDec{t};
-                mDec{t} = weights * sample{t}(rank{t}(1:mu)).Decs;
+                mDec{t} = weights * Decs(sample{t}(rank{t}(1:mu)));
                 Algo.Mean{t} = mDec{t};
                 % Update evolution paths
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff) * invsqrtC{t} * (mDec{t} - oldDec)' / sigma{t};
                 hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - lambda * (t - 1)) / (lambda * Prob.T)) + 1))) < hth;
                 pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff) * (mDec{t} - oldDec)' / sigma{t};
                 % Update covariance matrix
-                artmp = (sample{t}(rank{t}(1:mu)).Decs - repmat(oldDec, mu, 1))' / sigma{t};
+                artmp = (Decs(sample{t}(rank{t}(1:mu))) - repmat(oldDec, mu, 1))' / sigma{t};
                 delta = (1 - hsig) * cc{t} * (2 - cc{t});
                 C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t} * pc{t}' + delta * C{t}) + cmu{t} * artmp * diag(weights) * artmp';
                 % Update step size
@@ -200,11 +200,11 @@ methods
                 boundCVs(i) = BoundaryViolation(sample(i).Dec, -0.05, 1.05);
             end
             sample = Algo.Evaluation(sample, Prob, t);
-            boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
-            [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);
+            boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(CVs(sample));
+            [~, rank] = sortrows([CVs(sample) + boundCVs, Objs(sample)], [1, 2]);
         else
             sample = Algo.Evaluation(sample, Prob, t);
-            [~, rank] = sortrows([sample.CVs, sample.Objs], [1, 2]);
+            [~, rank] = sortrows([CVs(sample), Objs(sample)], [1, 2]);
         end
     end
 end

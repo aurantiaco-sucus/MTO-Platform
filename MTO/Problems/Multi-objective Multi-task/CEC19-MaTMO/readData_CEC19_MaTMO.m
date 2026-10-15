@@ -11,43 +11,43 @@ for i = 1:tasks_num
             ShiftVectorName = [ShiftVectorName, '.txt'];
             RotationMatrixName = [file_dir, 'M/M1/M1_', num2str(i)];
             RotationMatrixName = [RotationMatrixName, '.txt'];
-            ShiftVector{i} = textread(ShiftVectorName);
-            RotationMatrix{i} = textread(RotationMatrixName);
+            ShiftVector{i} = load(ShiftVectorName, '-ascii');
+            RotationMatrix{i} = load(RotationMatrixName, '-ascii');
         case 2
             ShiftVectorName = [file_dir, 'SVector/S2/S2_', num2str(i)];
             ShiftVectorName = [ShiftVectorName, '.txt'];
             RotationMatrixName = [file_dir, 'M/M2/M2_', num2str(i)];
             RotationMatrixName = [RotationMatrixName, '.txt'];
-            ShiftVector{i} = textread(ShiftVectorName);
-            RotationMatrix{i} = textread(RotationMatrixName);
+            ShiftVector{i} = load(ShiftVectorName, '-ascii');
+            RotationMatrix{i} = load(RotationMatrixName, '-ascii');
         case 3
             ShiftVectorName = [file_dir, 'SVector/S3/S3_', num2str(i)];
             ShiftVectorName = [ShiftVectorName, '.txt'];
             RotationMatrixName = [file_dir, 'M/M3/M3_', num2str(i)];
             RotationMatrixName = [RotationMatrixName, '.txt'];
-            ShiftVector{i} = textread(ShiftVectorName);
-            RotationMatrix{i} = textread(RotationMatrixName);
+            ShiftVector{i} = load(ShiftVectorName, '-ascii');
+            RotationMatrix{i} = load(RotationMatrixName, '-ascii');
         case 4
             ShiftVectorName = [file_dir, 'SVector/S4/S4_', num2str(i)];
             ShiftVectorName = [ShiftVectorName, '.txt'];
             RotationMatrixName = [file_dir, 'M/M4/M4_', num2str(i)];
             RotationMatrixName = [RotationMatrixName, '.txt'];
-            ShiftVector{i} = textread(ShiftVectorName);
-            RotationMatrix{i} = textread(RotationMatrixName);
+            ShiftVector{i} = load(ShiftVectorName, '-ascii');
+            RotationMatrix{i} = load(RotationMatrixName, '-ascii');
         case 5
             ShiftVectorName = [file_dir, 'SVector/S5/S5_', num2str(i)];
             ShiftVectorName = [ShiftVectorName, '.txt'];
             RotationMatrixName = [file_dir, 'M/M5/M5_', num2str(i)];
             RotationMatrixName = [RotationMatrixName, '.txt'];
-            ShiftVector{i} = textread(ShiftVectorName);
-            RotationMatrix{i} = textread(RotationMatrixName);
+            ShiftVector{i} = load(ShiftVectorName, '-ascii');
+            RotationMatrix{i} = load(RotationMatrixName, '-ascii');
         case 6
             ShiftVectorName = [file_dir, 'SVector/S6/S6_', num2str(i)];
             ShiftVectorName = [ShiftVectorName, '.txt'];
             RotationMatrixName = [file_dir, 'M/M6/M6_', num2str(i)];
             RotationMatrixName = [RotationMatrixName, '.txt'];
-            ShiftVector{i} = textread(ShiftVectorName);
-            RotationMatrix{i} = textread(RotationMatrixName);
+            ShiftVector{i} = load(ShiftVectorName, '-ascii');
+            RotationMatrix{i} = load(RotationMatrixName, '-ascii');
     end
 end
 end

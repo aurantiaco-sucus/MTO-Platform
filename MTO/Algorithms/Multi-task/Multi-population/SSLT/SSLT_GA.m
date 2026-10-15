@@ -83,8 +83,8 @@ methods
                 s = idx(randi(end));
 
                 % old state
-                conv_target = (min(population_old{t}.Objs) - min(population{t}.Objs)) / min(population_old{t}.Objs);
-                conv_source = (min(population_old{s}.Objs) - min(population{s}.Objs)) / min(population_old{s}.Objs);
+                conv_target = (min(Objs(population_old{t})) - min(Objs(population{t}))) / min(Objs(population_old{t}));
+                conv_source = (min(Objs(population_old{s})) - min(Objs(population{s}))) / min(Objs(population_old{s}));
 
                 wsd = Algo.Ws(population{s}, population{t});
                 ls_target_type = Algo.Dispersion(population{t}, population_old{t});
@@ -149,9 +149,9 @@ methods
                     smooth_pop2 = Algo.Smooth(population{s});
                     smooth_pop1 = Algo.Smooth(population{t});
                     % Center of the target_population
-                    center_target_population = sum(smooth_pop1.Decs, 1) ./ length(smooth_pop1);
+                    center_target_population = sum(Decs(smooth_pop1), 1) ./ length(smooth_pop1);
                     % Center of the source_population
-                    center_source_population = sum(smooth_pop2.Decs, 1) ./ length(smooth_pop2);
+                    center_source_population = sum(Decs(smooth_pop2), 1) ./ length(smooth_pop2);
 
                     % Move distance
                     for si = 1:length(smooth_pop2)
@@ -188,15 +188,15 @@ methods
 
                 population_old{t} = population{t};
                 population{t} = new_population;
-                fold = min(population_old{t}.Objs);
-                f = min(population{t}.Objs);
-                fold_mean = mean(population_old{t}.Objs);
-                f_mean = mean(population{t}.Objs);
+                fold = min(Objs(population_old{t}));
+                f = min(Objs(population{t}));
+                fold_mean = mean(Objs(population_old{t}));
+                f_mean = mean(Objs(population{t}));
 
                 % Update State
 
-                conv_new_target = (min(population_old{t}.Objs) - min(population{t}.Objs)) / min(population_old{t}.Objs);
-                conv_new_source = (min(population_old{s}.Objs) - min(population{s}.Objs)) / min(population_old{s}.Objs);
+                conv_new_target = (min(Objs(population_old{t})) - min(Objs(population{t}))) / min(Objs(population_old{t}));
+                conv_new_source = (min(Objs(population_old{s})) - min(Objs(population{s}))) / min(Objs(population_old{s}));
 
                 wsd_new = Algo.Ws(population{s}, population{t});
                 ls_target_type_new = Algo.Dispersion(population{t}, population_old{t});
@@ -247,22 +247,22 @@ methods
     end
 
     function div = Diversity(Algo, population)
-        [~, ind_best] = min(population.Objs);
+        [~, ind_best] = min(Objs(population));
         population_best_dec = population(ind_best).Dec;
-        population_dec_matrix = population.Decs;
+        population_dec_matrix = Decs(population);
         div = sum(sum((population_dec_matrix - population_best_dec).^3, 2), 1) / length(population);
     end
 
     function conv = Convergence(Algo, population_old, population_current)
-        center_old_pop = mean(population_old.Decs, 1);
-        center_current_pop = mean(population_current.Decs, 1);
+        center_old_pop = mean(Decs(population_old), 1);
+        center_current_pop = mean(Decs(population_current), 1);
         conv = sqrt(sum((center_old_pop - center_current_pop).^2, 2));
     end
 
     function ls_type = Dispersion(Algo, population, population_old)
-        [~, rank] = sortrows(population.Objs);
+        [~, rank] = sortrows(Objs(population));
         M = round(0.1 * length(population));
-        M_pop = population(rank(1:max(M, 1))).Decs;
+        M_pop = Decs(population(rank(1:max(M, 1))));
         up = 0;
         for i = 1:M - 1
             temp = M_pop(i + 1:end);
@@ -271,9 +271,9 @@ methods
 
         dm = up / (M * (M - 1));
 
-        [~, rank] = sortrows(population_old.Objs);
+        [~, rank] = sortrows(Objs(population_old));
         M = round(0.1 * length(population_old));
-        M_pop_old = population_old(rank(1:max(M, 1))).Decs;
+        M_pop_old = Decs(population_old(rank(1:max(M, 1))));
         up_old = 0;
         for i = 1:M - 1
             temp = M_pop_old(i + 1:end);
@@ -292,8 +292,8 @@ methods
     end
 
     function wsd = Ws(Algo, target_population, domain_population)
-        u_samples = target_population.Decs;
-        v_samples = domain_population.Decs;
+        u_samples = Decs(target_population);
+        v_samples = Decs(domain_population);
         u_samples_sorted = sort(u_samples(:));
         v_samples_sorted = sort(v_samples(:));
         all_samples = unique([u_samples_sorted; v_samples_sorted], 'sorted');
@@ -329,9 +329,9 @@ methods
 
     function offspring = Generation_Domain(Algo, population, source_population, Prob)
         count = 1;
-        [~, best_source_ind] = min(source_population.Objs);
+        [~, best_source_ind] = min(Objs(source_population));
         best_source_individual = source_population(best_source_ind);
-        [~, best_target_ind] = min(population.Objs);
+        [~, best_target_ind] = min(Objs(population));
         best_target_individual = population(best_target_ind);
         mean_target_source = (best_source_individual.Dec - best_target_individual.Dec);
         num = max(1, round((Algo.FE / Prob.maxFE) * 10));

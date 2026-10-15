@@ -84,14 +84,14 @@ methods
             best_g = [Algo.Best{:}];
             offspring = Algo.Evaluation(offspring, Prob, k);
 
-            fit_old = population{k}.Objs';
-            replace = population{k}.Objs > offspring.Objs;
+            fit_old = Objs(population{k})';
+            replace = Objs(population{k}) > Objs(offspring);
             population{k}(replace) = offspring(replace);
-            fit_new = population{k}.Objs';
+            fit_new = Objs(population{k})';
 
             % calculate the reward
             R_p = max((fit_old - fit_new) ./ (fit_old), 0);
-            R_b = max((min(best_g.Objs) - min(fit_new)) / min(best_g.Objs), 0);
+            R_b = max((min(Objs(best_g)) - min(fit_new)) / min(Objs(best_g)), 0);
             R = zeros(Prob.T, 1);
             for t = 1:Prob.T
                 if t == k %The main task

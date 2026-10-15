@@ -19,18 +19,18 @@ sub_pop = length(this); sub_pop1 = length(prev);
 % prevMin=min(reshape([prev.Dec],prevDims,[]),[],2)';
 % thisMax=max(reshape([this.Dec],thisDims,[]),[],2)';
 % thisMin=min(reshape([this.Dec],thisDims,[]),[],2)';
-prevMax = max(prev.Decs);
-prevMin = min(prev.Decs);
-thisMax = max(this.Decs);
-thisMin = min(this.Decs);
+prevMax = max(Decs(prev));
+prevMin = min(Decs(prev));
+thisMax = max(Decs(this));
+thisMin = min(Decs(this));
 prevRange = prevMax - prevMin;
 thisRange = thisMax - thisMin;
 
-mPrev = mean(prev.Decs);
-mThis = mean(this.Decs);
+mPrev = mean(Decs(prev));
+mThis = mean(Decs(this));
 
-temp1 = power(prev.Decs - mPrev, 2);
-temp2 = power(this.Decs - mThis, 2);
+temp1 = power(Decs(prev) - mPrev, 2);
+temp2 = power(Decs(this) - mThis, 2);
 % mPrev=mean(reshape([prev.Dec],prevDims,[]),2);
 % mThis=mean(reshape([this.Dec],thisDims,[]),2);
 % temp1=power((reshape([prev.Dec],[],prevDims)-mPrev),2);

@@ -69,10 +69,10 @@ methods
                 else
                     Ep = 0;
                 end
-                CV = population1{t}.CVs; CV(CV < Ep) = 0;
-                Obj = population1{t}.Objs;
+                CV = CVs(population1{t}); CV(CV < Ep) = 0;
+                Obj = Objs(population1{t});
                 mating_pool1{t} = TournamentSelection(2, Prob.N, CV, Obj);
-                mating_pool2{t} = TournamentSelection(2, Prob.N, population2{t}.CVs, population2{t}.Objs);
+                mating_pool2{t} = TournamentSelection(2, Prob.N, CVs(population2{t}), Objs(population2{t}));
             end
             for t = 1:Prob.T
                 k = randi(Prob.T);
@@ -94,8 +94,8 @@ methods
     function offspring = Generation1(Algo, population, pool, transpop)
         population = population(pool);
         population_temp = population;
-        temp_Dec = CEDA_trans(transpop, population_temp, transpop.Decs);
-        temp_Dec2 = CEDA_trans(population_temp, transpop, population.Decs);
+        temp_Dec = CEDA_trans(transpop, population_temp, Decs(transpop));
+        temp_Dec2 = CEDA_trans(population_temp, transpop, Decs(population));
         for i = 1:length(population)
             if rand() < Algo.RMP1
                 if rand() < 0.5
@@ -124,8 +124,8 @@ methods
     function offspring = Generation2(Algo, population, pool, transpop)
         population = population(pool);
         population_temp = population;
-        temp_Dec = CEDA_trans(transpop, population_temp, transpop.Decs);
-        temp_Dec2 = CEDA_trans(population_temp, transpop, population.Decs);
+        temp_Dec = CEDA_trans(transpop, population_temp, Decs(transpop));
+        temp_Dec2 = CEDA_trans(population_temp, transpop, Decs(population));
         for i = 1:length(population)
             if rand() < Algo.RMP2
                 if rand() < 0.5

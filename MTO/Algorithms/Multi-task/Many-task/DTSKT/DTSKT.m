@@ -54,15 +54,15 @@ methods
         population = Initialization(Algo, Prob, Individual);
         Elit_N = round(Algo.A * Prob.N);
         for t = 1:Prob.T
-            [~, rank{t}] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+            [~, rank{t}] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
             a = 0; b = 0;
             for i = 1:Elit_N
                 a = a + (log(Elit_N + 1) - log(i)) .* population{t}(rank{t}(i)).Dec;
                 b = b + log(Elit_N + 1) - log(i);
             end
             M{t} = a ./ b;
-            M_old{t} = mean(population{t}.Decs);
-            QQ = population{t}(rank{t}(1:Elit_N)).Decs;
+            M_old{t} = mean(Decs(population{t}));
+            QQ = Decs(population{t}(rank{t}(1:Elit_N)));
             QQ = QQ - repmat(M{t}, Elit_N, 1);
             WW = zeros(1, Prob.D(t));
             for i = 1:Elit_N
@@ -88,15 +88,15 @@ methods
                 OO.Dec = M{t}; OO = Algo.Evaluation(OO, Prob, t);
                 flag = 0;
                 idx = [];
-                mDec{t} = mean(population{t}.Decs);
+                mDec{t} = mean(Decs(population{t}));
 
                 [max_co, k] = max(CO(t, :));
                 msr = max_co / (sum(CO(t, :)));
 
                 if msr > (1.5 / Prob.T)
                     PATH = path{k};
-                    POPM = population{k}(rank{k}(1:Elit_N)).Decs;
-                    POPM = [(POPM - repmat(M_old{k}, size(POPM, 1), 1) + repmat(mDec{t}, size(POPM, 1), 1)); population{t}(rank{t}(1:Elit_N)).Decs];
+                    POPM = Decs(population{k}(rank{k}(1:Elit_N)));
+                    POPM = [(POPM - repmat(M_old{k}, size(POPM, 1), 1) + repmat(mDec{t}, size(POPM, 1), 1)); Decs(population{t}(rank{t}(1:Elit_N)))];
                     POPM = POPM - repmat(M{t}, size(POPM, 1), 1);
                     WW = zeros(1, Prob.D(t));
                     for i = 1:size(POPM, 1)
@@ -124,8 +124,8 @@ methods
                     Deta_S = {};
                     for i = 1:length(TOP_idx)
                         kk = TOP_idx(i);
-                        POPM = population{kk}(rank{kk}(1:Elit_N)).Decs;
-                        POPM = [(POPM - repmat(M_old{kk}, size(POPM, 1), 1) + repmat(mDec{t}, size(POPM, 1), 1)); population{t}(rank{t}(1:Elit_N)).Decs];
+                        POPM = Decs(population{kk}(rank{kk}(1:Elit_N)));
+                        POPM = [(POPM - repmat(M_old{kk}, size(POPM, 1), 1) + repmat(mDec{t}, size(POPM, 1), 1)); Decs(population{t}(rank{t}(1:Elit_N)))];
                         POPM = POPM - repmat(M{t}, size(POPM, 1), 1);
                         WW = zeros(1, Prob.D(t));
                         for j = 1:size(POPM, 1)
@@ -174,7 +174,7 @@ methods
                 POPM = Algo.Evaluation(POPM, Prob, t);
                 population{t} = [offspring(idx), POPM];
                 % Selection
-                [~, rank{t}] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                [~, rank{t}] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                 M_O = M{t};
                 a = 0; b = 0;
                 for i = 1:Elit_N
@@ -194,7 +194,7 @@ methods
                 else
                     M{t} = M{t};
                 end
-                QQ = population{t}(rank{t}(1:Elit_N)).Decs;
+                QQ = Decs(population{t}(rank{t}(1:Elit_N)));
                 QQ = QQ - repmat(M{t}, Elit_N, 1);
                 WW = zeros(1, Prob.D(t));
                 for i = 1:Elit_N
@@ -203,7 +203,7 @@ methods
                 WW = WW ./ Elit_N; WW = WW.^(1/2);
                 S{t} = WW;
                 path{t} = population{t}(rank{t}(randi(3))).Dec - M_old{t};
-                M_old{t} = mean(population{t}.Decs);
+                M_old{t} = mean(Decs(population{t}));
             end
         end
         Prob.N = origin_probN;

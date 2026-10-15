@@ -134,13 +134,13 @@ methods
                 population{t} = [population{t}, offspring];
                 % Selection
                 if max(Prob.M) == 1
-                    [~, rank] = sort(population{t}.Objs);
+                    [~, rank] = sort(Objs(population{t}));
                 else
                     rank = NSGA2Sort(population{t});
                 end
                 population{t} = population{t}(rank(1:Prob.N));
                 pop = population{t}(end:-1:1);
-                [~, ia] = intersect(pop.Decs, offspring.Decs, 'rows');
+                [~, ia] = intersect(Decs(pop), Decs(offspring), 'rows');
                 scale(t, m_pt) = sum(ia) / (Prob.N / 2 * (Prob.N + 1));
                 scale(t, m_pt) = Algo.minx + scale(t, m_pt) * (0.5 - Algo.minx);
                 if m_pt == t && option ~= 0

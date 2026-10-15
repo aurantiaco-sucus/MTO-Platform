@@ -130,14 +130,14 @@ methods
                 % Update CMA variables
                 % Update mean decision variables
                 oldDec = mDec{t};
-                mDec{t} = weights * offspring{t}(rank(1:mu)).Decs;
+                mDec{t} = weights * Decs(offspring{t}(rank(1:mu)));
                 Algo.Mean{t} = mDec{t};
                 % Update evolution paths
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff) * (mDec{t} - oldDec)' ./ sqrt(C{t}) / sigma{t};
                 hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - lambda * (t - 1)) / (lambda * Prob.T)) + 1))) < hth;
                 pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff) * (mDec{t} - oldDec)' / sigma{t};
                 % Update covariance matrix
-                artmp = (offspring{t}(rank(1:mu)).Decs - repmat(oldDec, mu, 1))' / sigma{t};
+                artmp = (Decs(offspring{t}(rank(1:mu))) - repmat(oldDec, mu, 1))' / sigma{t};
                 delta = (1 - hsig) * cc{t} * (2 - cc{t});
                 C{t} = (1 - ccov{t}) * C{t} + (ccov{t} / mueff) * (pc{t}.^2 + delta * C{t}) + ccov{t} * (1 - 1 / mueff) * artmp.^2 * weights';
                 % Update step size
@@ -145,7 +145,7 @@ methods
 
                 % selection
                 population{t} = [population{t}, offspring{t}];
-                [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                 population{t} = population{t}(rank(1:lambda));
                 rank = 1:lambda;
                 for i = 1:length(rank)

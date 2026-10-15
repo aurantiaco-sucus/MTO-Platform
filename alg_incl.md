@@ -6,26 +6,24 @@ Companion: `alg.md` has the full inventory, including the 7 excluded classes and
 
 Paths are relative to `MTO/Algorithms/` unless stated otherwise.
 
-> Every class here also depends on the shared framework fixes in `AGENTS.md`
-> (property type declarations, `methods (Abstract)` stubs, comma-list property
-> assignment, dot-notation method calls). Those are done once, in the base classes,
-> not per algorithm.
+> Every class here also depends on the shared Octave compatibility fixes in `AGENTS.md`.
+> Apply and validate those framework-wide fixes once; do not duplicate them per algorithm.
 
 | Tier | Count | Action |
 | --- | --- | --- |
-| Ready | 128 | Nothing beyond the shared framework fixes. |
-| Needs a shim | 5 | Write one small missing function first. |
+| Ready | 133 | Nothing beyond shared framework fixes and the local `mapminmax` / `lhsdesign` shims. |
+| Needs a shim | 0 | No missing helper remains; full runtime inventory is still unverified. |
 
-`stats` / `kmeans` columns mean the algorithm calls Statistics Toolbox functions; Octave Forge `statistics` supplies them (verified — see `AGENTS.md`). They are not exclusions. The `Needs` column flags only what Octave genuinely lacks.
+`stats` / `kmeans` columns mean the algorithm calls Statistics Toolbox functions; Octave Forge `statistics` supplies them (verified — see `AGENTS.md`). They are not exclusions. The `Needs` column flags only what Octave genuinely lacks. Both local shims exist; `mapminmax` training branches remain unverified, and the `lhsdesign` draw-profile divergence is recorded in `parity.md`.
 
-## Single-task — 38 classes (37 ready, 1 need a shim)
+## Single-task — 38 classes (38 ready, 0 need a shim)
 
 | Class | Folder | Uses | Fix needed |
 | --- | --- | --- | --- |
 | `C2oDE` | `Constraint Handling/C2oDE` | — | — |
 | `CAL_SHADE` | `Constraint Handling/CAL-SHADE` | stats | — |
 | `CCEF_ECHT` | `Constraint Handling/CCEF-ECHT` | — | — |
-| `CEDE_DRL` | `Constraint Handling/CEDE-DRL` | **mapminmax** | `mapminmax` shim |
+| `CEDE_DRL` | `Constraint Handling/CEDE-DRL` | `mapminmax` (local shim) | — (runtime smoke pending) |
 | `CORCO` | `Constraint Handling/CORCO` | — | — |
 | `DeCODE` | `Constraint Handling/DeCODE` | — | — |
 | `ECHT` | `Constraint Handling/ECHT` | — | — |
@@ -61,7 +59,7 @@ Paths are relative to `MTO/Algorithms/` unless stated otherwise.
 | `MPA` | `Swarm Intelligence/MPA` | — | — |
 | `PSO` | `Swarm Intelligence/PSO` | — | — |
 
-## Multi-task — 51 classes (48 ready, 3 need a shim)
+## Multi-task — 51 classes (51 ready, 0 need a shim)
 
 | Class | Folder | Uses | Fix needed |
 | --- | --- | --- | --- |
@@ -109,13 +107,13 @@ Paths are relative to `MTO/Algorithms/` unless stated otherwise.
 | `MTDE_ADKT` | `Multi-population/MTDE-ADKT` | stats | — |
 | `MTEA_AD` | `Multi-population/MTEA-AD` | stats | — |
 | `MTEA_HKTS` | `Multi-population/MTEA-HKTS` | — | — |
-| `MTEA_PAE` | `Multi-population/MTEA-PAE` | **lhsdesign** | `lhsdesign` shim |
+| `MTEA_PAE` | `Multi-population/MTEA-PAE` | `lhsdesign` (local pinned profile) | — |
 | `MTEA_SaO` | `Multi-population/MTEA-SaO` | — | — |
 | `MTES` | `Multi-population/MTES` | — | — |
 | `MTES_KG` | `Multi-population/MTES-KG` | — | — |
 | `sep_MTES_KG` | `Multi-population/MTES-KG` | — | — |
-| `SSLT_DE` | `Multi-population/SSLT` | **mapminmax** | `mapminmax` shim |
-| `SSLT_GA` | `Multi-population/SSLT` | **mapminmax** | `mapminmax` shim |
+| `SSLT_DE` | `Multi-population/SSLT` | `mapminmax` (local shim) | — (runtime smoke pending) |
+| `SSLT_GA` | `Multi-population/SSLT` | `mapminmax` (local shim) | — (runtime smoke pending) |
 
 ## Multi-objective Single-task — 15 classes (15 ready, 0 need a shim)
 
@@ -137,7 +135,7 @@ Paths are relative to `MTO/Algorithms/` unless stated otherwise.
 | `SPEA2` | `Non-dominated Sort/SPEA2` | — | — |
 | `SPEA2_DE` | `Non-dominated Sort/SPEA2` | — | — |
 
-## Multi-objective Multi-task — 20 classes (19 ready, 1 need a shim)
+## Multi-objective Multi-task — 20 classes (20 ready, 0 need a shim)
 
 | Class | Folder | Uses | Fix needed |
 | --- | --- | --- | --- |
@@ -154,7 +152,7 @@ Paths are relative to `MTO/Algorithms/` unless stated otherwise.
 | `MM_DE` | `Multi-population/MM-DE` | stats | — |
 | `MMTO_ETA` | `Multi-population/MMTO-ETA` | stats | — |
 | `MO_EMEA` | `Multi-population/MO-EMEA` | — | — |
-| `MO_MTEA_PAE` | `Multi-population/MO-MTEA-PAE` | **lhsdesign** | `lhsdesign` shim |
+| `MO_MTEA_PAE` | `Multi-population/MO-MTEA-PAE` | `lhsdesign` (local pinned profile) | — |
 | `MO_MTEA_SaO` | `Multi-population/MO-MTEA-SaO` | — | — |
 | `MOMFEA_SADE` | `Multi-population/MOMFEA-SADE` | — | — |
 | `MTDE_MKTA` | `Multi-population/MTDE-MKTA` | stats | — |
@@ -176,14 +174,17 @@ Paths are relative to `MTO/Algorithms/` unless stated otherwise.
 | `ATNG_SNES` | `ATNG-SNES` | — | — |
 | `KR_AMTEA` | `KR-AMTEA` | stats | — |
 
-## Missing functions to write
+## Local shims and runtime gaps
 
-Two small numerical helpers are absent from Octave core and Forge `statistics`.
+The two formerly missing helpers now exist locally. `lhsdesign` is a documented smooth/maximin
+profile for the call shape used here; its primitive draw order is pinned for Rust but not
+verified against MATLAB internals. `mapminmax` implements the used forms, while its training
+branches remain unverified.
 
 | Function | Used by | What it must do |
 | --- | --- | --- |
-| `lhsdesign(n, p)` | `MTEA_PAE`, `MO_MTEA_PAE` | Latin hypercube sample: `n` points in `[0,1]^p`, one per stratum per dimension, strata randomly permuted. |
-| `mapminmax` | `SSLT_DE`, `SSLT_GA`, `CEDE_DRL`, and their `Dropout/Estimate.m` | Min-max scale to `[-1,1]`. Must support the stateful `'apply'` / `'reverse'` forms and carry the `ps` / `qs` settings struct. |
+| `lhsdesign(n, p)` | `MTEA_PAE`, `MO_MTEA_PAE` | Implemented as smooth maximin LHS; the explicit Octave/Rust RNG profile and MATLAB-parity caveat are in `parity.md`. |
+| `mapminmax` | `SSLT_DE`, `SSLT_GA`, `CEDE_DRL`, and their `Dropout/Estimate.m` | Implemented in `MTO/Algorithms/Utils/Normalization/mapminmax.m` for row-wise `[-1,1]` scaling and stateful `'apply'` / `'reverse'`; runtime training branches remain pending. |
 
 `tiledlayout` / `nexttile` are also missing, but are reached only from `DrawPopDec` / `DrawPopObj` when `Draw_Dec` / `Draw_Obj` are enabled. The GUI and plotting path is out of scope — for headless runs nothing needs to be written.
 

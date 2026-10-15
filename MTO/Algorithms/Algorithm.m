@@ -11,20 +11,20 @@ classdef Algorithm < handle
 %--------------------------------------------------------------------------
 
 properties
-    Name char % Algorithm Name
-    FE double = 0 % Function evaluations
-    Gen double = 1 % Generations
-    FE_Gen double % FE in each Gen
-    Best cell % Best individual found
-    Mean cell % Mean of distribution
-    Result struct % Result structure array
-    Result_Num double = 50 % Convergence Results Num
-    Result_Buffer struct % Full results saved only at FE checkpoints
-    Result_Buffer_FE double % FE associated with each buffered checkpoint
-    Save_Dec logical = false % Save Decision Variables Flag
+    Name % Algorithm Name
+    FE = 0 % Function evaluations
+    Gen = 1 % Generations
+    FE_Gen % FE in each Gen
+    Best % Best individual found
+    Mean % Mean of distribution
+    Result % Result structure array
+    Result_Num = 50 % Convergence Results Num
+    Result_Buffer % Full results saved only at FE checkpoints
+    Result_Buffer_FE % FE associated with each buffered checkpoint
+    Save_Dec = false % Save Decision Variables Flag
     Check_Status_Fn = @(varargin)[]
-    Draw_Dec logical = false
-    Draw_Obj logical = false
+    Draw_Dec = false
+    Draw_Obj = false
     dpd % DrawPopDec Object
     dpo % DrawPopObj Object
 end
@@ -103,7 +103,9 @@ methods
         Algo.FE_Gen(Algo.Gen) = Algo.FE;
         Algo.Gen = Algo.Gen + 1;
 
-        drawnow('limitrate');
+        if ~exist('OCTAVE_VERSION', 'builtin')
+            drawnow('limitrate');
+        end
         Algo.Check_Status_Fn();
     end
 
@@ -111,7 +113,7 @@ methods
         % Mapping Decision Variables to Real Values
         lenPop = length(Pop);
         D = Prob.D(t);
-        Decs = Pop.Decs;
+        Decs = Decs(Pop);
         % Range scaling: x = Dec * (Ub - Lb) + Lb
         % Assumes Ub/Lb are row vectors (1xD) and Decs is (NxD)
         Range = Prob.Ub{t} - Prob.Lb{t};
@@ -187,6 +189,7 @@ methods
 end
 
 methods (Abstract)
-    run(Algo, Prob) % run this tasks with algorithm,
+    function run(Algo, Prob) % run this tasks with algorithm,
+    end
 end
 end

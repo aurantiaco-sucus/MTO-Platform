@@ -94,8 +94,8 @@ methods
                         temp_sample(i).Dec = vX(:, i)';
                     end
                     temp_sample = Algo.Evaluation(temp_sample, Prob, t);
-                    Fit = 1e8 * mean(sample{t}.CVs) + mean(sample{t}.Objs);
-                    vFit = 1e8 * mean(temp_sample.CVs) + mean(temp_sample.Objs);
+                    Fit = 1e8 * mean(CVs(sample{t})) + mean(Objs(sample{t}));
+                    vFit = 1e8 * mean(CVs(temp_sample)) + mean(Objs(temp_sample));
                     if vFit > Fit
                         rho(t) = 2/3 * rho(t);
                         alpha(t) = 2/3 * alpha(t);

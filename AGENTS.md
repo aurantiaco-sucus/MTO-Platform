@@ -48,9 +48,11 @@ A problem or algorithm is **excluded** when it needs any of the following.
 
 Two clarifications that matter in practice:
 
-- **`mapminmax` is a shim, not an exclusion.** It is Deep Learning Toolbox, but it is
-  only min-max scaling to `[-1,1]`, so the three affected algorithms are marked
-  *pending* rather than excluded. Same for `lhsdesign` (Statistics Toolbox).
+- **`mapminmax` and `lhsdesign` are shims, not exclusions.** The targeted local `mapminmax`
+  shim covers the used default/`apply`/`reverse` forms; its affected training branches still
+  need runtime validation. A local smooth/maximin `lhsdesign` shim now covers the only call
+  form used by MToP; its explicit RNG profile is recorded in `parity.md` as an Octave/Rust
+  reference, not claimed as MATLAB-internal parity.
 - **Compiled MEX is in scope.** The CEC `.cpp` sources are self-contained, Octave ships
   the MEX API, and all three were verified to build and run — see "MEX build" below.
 
@@ -95,39 +97,46 @@ the licensing note) that is not worth porting.
 There is no local MATLAB, so MATLAB parity cannot be checked directly here. Treat
 MATLAB behaviour as the specification and flag anything you cannot confirm.
 
-## Current state
+## Current state (verified 2026-10-15)
 
-**No complete Octave run has been achieved yet.** As of the last session the repository does
-not load at all, and the furthest reached was instantiating algorithm objects after patching
-three files by hand in a scratch copy.
+The first Octave end-to-end smoke runs now pass. This supersedes the earlier checkpoint
+history below, which described the repository before the compatibility changes were applied.
 
-One command tells you where things stand. **Run it from the repository root** — the `MTO`
-path is relative:
+Run the maintained smoke suite from the repository root (or by its absolute path):
 
 ```bash
-octave --norc -q --eval "addpath(genpath('MTO')); pkg load statistics; \
-  try, o = Algorithm(); printf('LOADS OK\n'); catch e, printf('FAILS: %s\n', e.message); end"
+octave --norc -q tests/octave_smoke.m
 ```
 
-Expected output today: `FAILS: syntax error near line 14, column 13 in file …/Algorithm.m`.
+Verified with GNU Octave 11.3.0 and Forge `statistics` 2.0.0:
 
-Useful checkpoints, in the order they were observed to break:
+- The base classes load; all ten algorithm pilots (`GA`, `jDE`, `CMA_ES`, `NSGA_II`, `MFEA`, `ECHT`, `MFEA_II`, `EMaTO_MKT`, `MO_MFEA`, `AEMEA`) have construction and runtime smoke coverage.
+- Static Octave parsing loaded 616 of 620 unique class names. The four failures are the two out-of-scope GUI classes and two classes requiring `nnet.layer.Layer`; the three duplicated class names were each selected by directory and parsed separately. Seventeen modified top-level functions passed the parse audit; the two new numerical shims are exercised by the smoke tests.
+- `GA` and `jDE` complete `Func_Sphere` runs at exactly 20 evaluations.
+- `CMA_ES` completes `Func_Sphere` at exactly 20 evaluations after a value-class array preallocation fix.
+- `NSGA_II` completes a `DTLZ1` run at exactly 20 evaluations.
+- `MFEA` completes `CMT1` at exactly 60 evaluations, exercising the multifactorial initializer and selector.
+- `MFEA_II` completes `CMT1` at exactly 60 evaluations, exercising the online RMP learner and Forge statistics calls.
+- `EMaTO_MKT` completes a ten-task synthetic Sphere run at exactly 200 evaluations, exercising Forge `kmeans` and the many-task selection loop.
+- `MO_MFEA` completes `CEC17_MTMO1_CI_HS` at exactly 40 evaluations, exercising joint multi-objective/multifactorial selection.
+- `MO_MFEA` completes `CEC19_MaTMO1` (three tasks) and `SOPM_MTMO1` at exactly 60 evaluations each.
+- `MFEA` completes `C2TOP_Case1_P1` at exactly 40 evaluations, exercising the competitive suite generator.
+- `CEDA_MP` completes `CMT1` at exactly 60 evaluations and exercises the corrected `CEDA_trans` entry point.
+- `ECHT` completes `CEC17_CSO1` at exactly 90 evaluations, exercising the constrained 2-D population shape.
+- `GA` completes `CEC17_MTSO1_CI_HS` at exactly 2000 evaluations from the repository root.
+- `AEMEA` completes the `AMTSO_Case1_P1` stream run with a transfer checkpoint at total `FE=24`, per-task `TaskFE=[12, 12]`.
+- `MTO_CMD` completes and saves both single- and multi-objective headless runs; the smoke test checks the returned and saved result schema. For Octave saves, `Problems.Fnc` entries are descriptive source strings (not callable) to avoid serializing anonymous handles that capture the `Problem` object; the in-memory return retains callable handles. Reconstruct the Problem object to rerun from an Octave MAT-file.
+- `CEC17_SO1` builds its Linux MEX into a temporary directory, evaluates the shifted optimum to exactly zero, and completes a GA run at exactly 8 evaluations.
+- `MaT_CEC17_SO` completes a GA run over all 87 tasks at exactly 696 evaluations, covering its 10/30/50-D task groups through the same MEX.
+- `lhsdesign` passes stratum and fixed-draw-profile checks; `MTEA_PAE` and `MO_MTEA_PAE` each complete 200-FE smoke runs with it.
+- `mapminmax` passes row-wise scaling, stateful apply/reverse, constant-row, and round-trip checks; its neural-training callers are not yet end-to-end run.
+- The CEC19-MaTMO data loader preserves shift-vector and rotation-matrix shapes with Octave ASCII loading; a three-task MO_MFEA run passes.
+- The bulk `Individual` accessors return all rows when invoked in function form.
 
-| Checkpoint | How to test | Last observed result |
-| --- | --- | --- |
-| Tree loads | the command above | **fails** — `syntax error near line 14, column 13 in Algorithm.m` |
-| After fixing blockers 1–2 | `GA()`, `NSGA_II()`, `MFEA()`, `DE()`, `MTEA_AD()` | constructed successfully in a patched scratch copy |
-| A problem constructs | `CEC17_MTSO1_CI_HS()` | constructed successfully |
-| A run completes | `p = CEC17_MTSO1_CI_HS(); p.maxFE = 2000; a = GA(); a.reset(); p.setTasks(); a.run(p);` | **fails** at `Initialization.m:26` (blocker 3) |
-| …and after fixing blocker 3 | same | **fails** inside `Evaluation` with `Objs(100,_): out of bound 1` — the symptom of blocker 4 |
-
-That last row is the important one: blocker 4 does not announce itself. It surfaces as a
-dimension mismatch somewhere downstream of `Pop.Decs`, because the method is applied to the
-first element only. Expect to lose time to this unless you settle blocker 4 first.
-
-**Work in a scratch copy outside the repository** (`cp -r MTO /tmp/scratch`) while
-experimenting with the parse-level fixes, so the upstream tree stays diffable. That is how
-the checkpoints above were established.
+This is a pilot smoke suite, **not** a complete run of the algorithm/problem inventory. All
+ten algorithm pilots and all eleven problem pilots have now been exercised, but other
+algorithms, other stream implementations, and the full catalog have not. MATLAB parity cannot
+be checked here.
 
 ### A tooling gotcha
 
@@ -138,56 +147,79 @@ Four `.m` files are **not UTF-8** (they carry Chinese comments in a legacy encod
 that reads the tree as UTF-8 will crash on them; read with a permissive encoding
 (`latin-1`) or handle the decode error explicitly.
 
-## Known blockers — the critical path
+## Octave compatibility status — critical path
 
-Nothing in the repository loads in Octave today. The reason is narrower than it looks:
-**only three files fail to parse, but they are the base classes of 599 of the 622
-`classdef` files** — all 435 problem classes, 131 algorithm classes, 9 stream-algorithm
-classes and 24 individual classes — so the failure is total.
+The initial audit found four blockers that prevented any class from loading or any normal
+population-based run from completing. Those blockers are now repaired in the working tree.
+A later parse audit also surfaced abstract-stub syntax in the shared stream bases; that is fixed
+too. Compatibility edits to existing algorithms preserve random-number call order and
+function-evaluation accounting; no RNG algorithm or existing numerical operator was changed.
+The newly added `mapminmax` shim implements the documented deterministic scaling interface.
 
-| # | Blocking issue | Where | Scope |
+| # | Initial blocker | Scope | Current status |
 | --- | --- | --- | --- |
-| 1 | Property **type declarations** are a syntax error in Octave (`Name char`, `FE double = 0`, `Result struct % …`) | `Algorithms/Algorithm.m` lines 13–27; `Problems/Problem.m` lines 19–34; `Algorithms/Utils/Individual/Individual.m` lines 13–18 | 3 files, 20 declarations |
-| 2 | `methods (Abstract)` in **stub form** (`run(Algo, Prob)` with no `function` keyword) is rejected: *"external methods are only allowed in @-folders"* | `Algorithms/Algorithm.m:189`, `Problems/Problem.m:36` | 2 sites |
-| 3 | Comma-list assignment to object properties — `[CurrentPop.Dec] = deal(DecCell{:})` — fails with *"can't perform indexing operation on array of … objects"*. Reading `[p.Dec]` works; only the **assignment** form fails. | `Algorithms/Utils/Initialization/` — `Initialization.m:26`, `Initialization_One.m:23`, `Initialization_MF.m:21,25,26,62,80`, `Initialization_MF_One.m:23,24,34,40`, `Initialization_MF_MO.m:29,35` | 13 sites, 5 files |
-| 4 | **Dot-notation method calls on object arrays silently return the wrong thing.** `Individual` defines `Decs`, `Objs`, `Cons`, `CVs` as methods; Octave evaluates `Pop.Decs` as "call it on the **first element only**" and returns that. Measured: `p.Decs` → `1×3` where `Decs(p)` → `5×3`. No error is raised. | `.Objs` (272 sites), `.Decs` (186), `.CVs` (147), `.Cons` (4) | ~605 sites |
+| 1 | MATLAB property type declarations were rejected by Octave | 3 base classes, 20 declarations | **Fixed** — removed annotations while preserving defaults and access. |
+| 2 | Stub-form abstract declarations were rejected | 2 base-class methods | **Fixed** — expressed as empty `function ... end` declarations. |
+| 3 | Comma-list writes such as `[population.Dec] = deal(...)` failed | 13 assignments in 5 initialization utilities | **Fixed** — replaced with element-wise assignments in the same order; no random calls added. |
+| 4 | Dot-notation calls such as `population.Decs` silently dispatched only on the first object | 609 call sites (`Decs`, `Objs`, `CVs`, `Cons`) | **Fixed** — converted to standard function form (`Decs(population)`, etc.), the form most explicit for the future Rust interface. |
+| 5 | Stub-form abstract signatures in shared stream classes were rejected by Octave | `StreamAlgorithm.m:160`; `Utils/Stream/AsyncCMAStream.m:164–168` | **Fixed** — expressed as empty abstract `function ... end` declarations; all changed stream class definitions now parse. |
+| 6 | MATLAB's built-in `Class.empty(...)` was unavailable for value-class individuals | 54 sites across 40 algorithm files | **Fixed** — replaced with `repmat(Class(), dims)`, verified for base and derived `Individual` classes and by the stream smoke run. |
 
-**Issue 4 is the one to plan around.** Issues 1–3 are mechanical and bounded to 3 + 2 + 13
-locations. Issue 4 is a semantics decision that touches roughly 605 call sites and fails
-*silently* — it returns plausible-looking numbers of the wrong size, so a naive fix will
-appear to work. Decide the approach before starting: either give `Individual` real
-properties that are kept in sync, or convert every call site to function form
-(`Decs(pop)`, `Objs(pop)`). The second is closer to what a Rust port wants anyway, since
-Rust has no implicit method-on-array dispatch to reproduce.
+Issue 4 was selected over duplicated/synchronized properties because the accessors already
+encapsulate the population aggregation and explicit calls make array dispatch unambiguous. The
+conversion was tested on two-element `Individual` arrays and through single-objective,
+multi-objective, and multifactorial runs. Search for function-form calls when adding new code;
+do not reintroduce `population.Decs`-style syntax.
 
-Confirmed **working** in Octave 11.3 (no action needed): `classdef (Abstract)`,
-superclass constructor calls (`o@Super(args)`), `properties (Constant)`,
-`(SetAccess = private)`, `(Access = protected)`, `(Hidden)`, `methods (Static)`, and
-inheriting from `handle`.
+Two additional Octave compatibility findings were fixed while advancing the pilots:
+
+- `CMA_ES`'s `sample{t}(1, lambda{t}) = Individual()` failed with `subsasgn: invalid object`
+  because it grows an object array directly inside empty cell content. The same operation
+  succeeds when the object array is first created in a local variable and then assigned into
+  the cell. This is now done without changing the array shape or consuming randomness.
+- `Algorithm.notTerminated` called `drawnow('limitrate')` unconditionally. That graphics
+  refresh is skipped on Octave for headless runs; MATLAB retains the existing throttled call.
+- Stream initialization and several algorithms used MATLAB's `IndividualClass.empty(...)`.
+  Octave reports no such method for these value classes. Calls were replaced with `repmat`
+  using the same requested empty dimensions. AEMEA's staggered-arrival and transfer-checkpoint
+  smoke run now passes.
+- Octave `textread` flattened the CEC19-MaTMO shift vectors and rotation matrices into columns,
+  unlike the shapes assumed by the objective function. `readData_CEC19_MaTMO` now uses
+  `load(..., '-ascii')`, preserving the row/matrix layout; the three-task MO_MFEA run passes.
+- The same stub-form abstract syntax also occurred in `StreamAlgorithm` and
+  `AsyncCMAStream`. Octave now parses those bases and their derived classes.
+
+During accessor conversion, same-named output temporaries in the multi-factorial
+initialization/selection paths were renamed (`ObjMatrix`, `CVVector`) to avoid masking the
+accessor function on a later task iteration. The `MFEA`/`CMT1` smoke test exercises both tasks
+and the selector.
+
+Confirmed **working** in Octave 11.3 (no action needed): `classdef (Abstract)`, superclass
+constructor calls (`o@Super(args)`), `properties (Constant)`, `(SetAccess = private)`,
+`(Access = protected)`, `(Hidden)`, `methods (Static)`, and inheriting from `handle`.
 
 Also note `Individual` is a **value class** (`classdef Individual`, no `< handle`) while
 `Algorithm` and `Problem` are handle classes. Array growth, copy-on-write, and sharing
 semantics differ accordingly — this matters for the Rust data model.
 
-## Missing functions to write
+## Missing functions and local shims
 
-Three functions used by in-scope code are absent from Octave core plus Forge `statistics`.
-Only the first two need writing for headless work; the third belongs to the out-of-scope
-plotting path.
+`lhsdesign` and `mapminmax` are absent from Octave core and Forge `statistics`, so MToP now
+provides targeted local shims for the call shapes used here. Neither shim claims to be a full
+replacement for its originating toolbox function.
+`tiledlayout` / `nexttile` remain absent but belong only to the out-of-scope plotting path.
 
-| Function | Used by | Notes |
+| Function | Used by | Current status |
 | --- | --- | --- |
-| `lhsdesign(n, p)` | `MTEA_PAE`, `MO_MTEA_PAE` | Latin hypercube: `n` points in `[0,1]^p`, one per stratum per dimension, strata randomly permuted. |
-| `mapminmax` | `SSLT_DE`, `SSLT_GA`, `CEDE_DRL`, and their `Dropout/Estimate.m` | Min-max scaling to `[-1,1]`. Must support the stateful `'apply'` / `'reverse'` forms and carry the `ps` / `qs` settings struct. |
-| `tiledlayout` / `nexttile` | `DrawPopDec`, `DrawPopObj` | Only reached when `Draw_Dec` / `Draw_Obj` are on. Out of scope — leave unimplemented for headless runs. |
+| `lhsdesign(n, p)` | `MTEA_PAE`, `MO_MTEA_PAE` | Implemented at `MTO/Algorithms/Utils/Normalization/lhsdesign.m` as a smooth maximin LHS with one initial design plus five fixed candidates. Its explicit Octave draw profile is recorded in `parity.md`; MATLAB internal draw-count parity is unverified. Both call sites pass 200-FE smoke runs. |
+| `mapminmax` | `SSLT_DE`, `SSLT_GA`, `CEDE_DRL`, and their `Dropout/Estimate.m` | Implemented at `MTO/Algorithms/Utils/Normalization/mapminmax.m` for default scaling and stateful `'apply'` / `'reverse'`. Unit-smoke-tested; affected training branches remain unverified. |
+| `tiledlayout` / `nexttile` | `DrawPopDec`, `DrawPopObj` | Intentionally unimplemented; only reached when drawing flags are enabled. |
 
-Statistics Toolbox functions are **not** a problem: Forge `statistics` supplies `pdist2`,
-`pdist`, `kmeans`, `mvnpdf`, `mvnrnd`, `normrnd`, `ranksum`, `tiedrank`, `datasample`,
-`randsample`, `mahal`, `friedman` and `histcounts`, and they were verified against the call
-shapes actually used here — including `kmeans(X,K,'Distance','cityblock','MaxIter',30)` and
-all 41 `normrnd` call sites. Two divergences exist but are not currently hit: Forge `kmeans`
-rejects `K` greater than the observation count, and `normrnd(vec, vec, m, n)` is rejected.
-Re-grep for both after any upstream sync.
+Forge `statistics` supplies `pdist2`, `pdist`, `kmeans`, `mvnpdf`, `mvnrnd`, `normrnd`,
+`ranksum`, `tiedrank`, `datasample`, `randsample`, `mahal`, `friedman` and `histcounts`, and
+they were verified against the call shapes used here. Two divergences are not currently hit:
+Forge `kmeans` rejects `K` greater than the observation count, and `normrnd(vec, vec, m, n)`
+is rejected. Re-grep for both after any upstream sync.
 
 ## MEX build
 
@@ -203,13 +235,16 @@ mkoctfile --mex cec14_func.cpp
 Compilation succeeds with warnings only (unchecked `fscanf` return values). Confirmation
 that the result is correct and not merely plausible: `cec17_func` returns exactly `100`
 for F1 evaluated at the shift vector, which is the CEC 2017 optimum convention — the
-repo's `- g` normalisation then puts the optimum at 0.
+repo's `- g` normalisation then puts the optimum at 0. The repeatable pilot build/run is
+`octave --norc -q tests/octave_mex_smoke.m`; it builds in a temporary directory and keeps no
+platform-specific binary in the repository.
 
 Two traps, both confirmed by testing:
 
-1. **The `.cpp` files open their data through a path relative to the repo root**
-   (`./Problems/Single-task/CEC17-SO/input_data/M_%d_D%d.txt`). Octave must be launched
-   from the directory containing `Problems/`, not from the suite folder.
+1. **The `.cpp` files open their data through a path relative to `MTO/`, the directory that
+   contains `Problems/`** (`./Problems/Single-task/CEC17-SO/input_data/M_%d_D%d.txt`). The
+   smoke script changes into `MTO/` before evaluating; running from the project root would
+   point at a nonexistent `./Problems/` path.
 2. **Missing data does not raise a MATLAB error — it segfaults.** The code prints an error
    after `fopen` returns `NULL`, then calls `fscanf` on the null handle anyway.
 
@@ -254,7 +289,7 @@ Summary of the classification:
 
 | | Total | In scope | Pending / build | Excluded |
 | --- | --- | --- | --- | --- |
-| Algorithms | 140 | 128 | 5 | 7 |
+| Algorithms | 140 | 133 | 0 | 7 |
 | Problems | 435 | 337 | 82 (MEX) | 16 |
 
 Excluded algorithms: `EMT_GS`, `MFEA_VC` (Deep Learning), `KLDE`, `KLPSO` (legacy NN API),

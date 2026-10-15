@@ -58,7 +58,7 @@ methods
     end
 
     function pop_loser = Generation(Algo, pop_winner, pop_loser)
-        wDec = mean(pop_winner.Decs, 1);
+        wDec = mean(Decs(pop_winner), 1);
         for i = 1:length(pop_loser)
             % Velocity update
             pop_loser(i).V = rand() * pop_loser(i).V + ...

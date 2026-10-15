@@ -105,11 +105,11 @@ methods
                 offspring = Algo.Generation(population, Prob, Model, t, partition, ktp, rank{t}, Select);
                 k = randi(Prob.T);
                 while k == t, k = randi(Prob.T); end
-                d1 = mean(ElitPop{t}.Decs, 1); d2 = mean(population{t}.Decs, 1);
-                d3 = mean(ElitPop{k}.Decs, 1); d4 = mean(population{k}.Decs, 1);
+                d1 = mean(Decs(ElitPop{t}), 1); d2 = mean(Decs(population{t}), 1);
+                d3 = mean(Decs(ElitPop{k}), 1); d4 = mean(Decs(population{k}), 1);
                 ds = d3 - d4;
-                source_mean = population{k}.Decs - repmat(d4, Prob.N, 1);
-                target_mean = population{t}.Decs - repmat(d2, Prob.N, 1);
+                source_mean = Decs(population{k}) - repmat(d4, Prob.N, 1);
+                target_mean = Decs(population{t}) - repmat(d2, Prob.N, 1);
                 [Qs, ~, lamda_s] = pca(source_mean);
                 [Qt, ~, lamda_t] = pca(target_mean);
                 alpha = lamda_t(1) / lamda_s(1);
@@ -199,7 +199,7 @@ methods
     end
 
     function [Model, partition] = LPCA(Algo, P, M, K, R)
-        PopDec = P.Decs;
+        PopDec = Decs(P);
         [N, D] = size(PopDec);
         Model = struct('mean', num2cell(PopDec(1:K, :), 2), ... % The mean of the model
             'eMean', num2cell(PopDec(1:K, :), 2), ...

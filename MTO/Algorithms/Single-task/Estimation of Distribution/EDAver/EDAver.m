@@ -45,14 +45,14 @@ methods
             for i = 1:Prob.N
                 population{t}(i).Dec = population{t}(i).Dec(1:Prob.D(t));
             end
-            [~, rank{t}] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+            [~, rank{t}] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
             a = 0; b = 0;
             for i = 1:round(Algo.A * Prob.N)
                 a = a + (log(round(Algo.A * Prob.N) + 1) - log(i)) .* population{t}(rank{t}(i)).Dec;
                 b = b + log(round(Algo.A * Prob.N) + 1) - log(i);
             end
             M{t} = a ./ b;
-            QQ = population{t}(rank{t}(1:round(Algo.A * Prob.N))).Decs;
+            QQ = Decs(population{t}(rank{t}(1:round(Algo.A * Prob.N))));
             QQ = QQ - repmat(M{t}, round(Algo.A * Prob.N), 1);
             WW = zeros(1, Prob.D(t));
             for i = 1:round(Algo.A * Prob.N)
@@ -92,7 +92,7 @@ methods
                 POP = Algo.Evaluation(POP, Prob, t);
                 population{t} = [offspring(idx), POP];
                 % Selection
-                [~, rank{t}] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                [~, rank{t}] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                 M_old = M{t};
                 a = 0; b = 0;
                 for i = 1:round(Algo.A * Prob.N)
@@ -112,7 +112,7 @@ methods
                 else
                     M{t} = M{t};
                 end
-                QQ = population{t}(rank{t}(1:round(Algo.A * Prob.N))).Decs;
+                QQ = Decs(population{t}(rank{t}(1:round(Algo.A * Prob.N))));
                 QQ = QQ - repmat(M{t}, round(Algo.A * Prob.N), 1);
                 WW = zeros(1, Prob.D(t));
                 for i = 1:round(Algo.A * Prob.N)

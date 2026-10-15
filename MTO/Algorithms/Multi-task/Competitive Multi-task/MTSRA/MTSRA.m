@@ -62,7 +62,7 @@ methods
         for t = 1:Prob.T
             MF{t} = 0.5 .* ones(1, Algo.H);
             MCR{t} = 0.5 * ones(1, Algo.H);
-            archive{t} = Individual_DE.empty();
+            archive{t} = repmat(Individual_DE(), 0, 0);
             Hidx(t) = 1;
             HR_idx(t) = 1;
         end

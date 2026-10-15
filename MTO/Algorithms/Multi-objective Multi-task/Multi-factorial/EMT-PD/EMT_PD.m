@@ -82,11 +82,11 @@ methods
         model_size = min([Prob.N, 40]);
         count = 1;
         for t = 1:Prob.T
-            P = population{t}(1:model_size).Decs';
+            P = Decs(population{t}(1:model_size))';
             task_pool = 1:Prob.T;
             task_pool(task_pool == t) = [];
             k = task_pool(randi(length(task_pool)));
-            Q = population{k}(1:model_size).Decs';
+            Q = Decs(population{k}(1:model_size))';
             for dim1 = 1:max(Prob.D)
                 a = P(dim1, :);
                 c = Q(dim1, :);

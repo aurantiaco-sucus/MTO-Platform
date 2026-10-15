@@ -105,7 +105,7 @@ methods
     end
 
     function offspring = Generation(Algo, population, F_pool, CR_pool, weights, rate)
-        Obj = population.Objs; CV = population.CVs;
+        Obj = Objs(population); CV = CVs(population);
         normal_Obj = (Obj - min(Obj)) ./ (std(Obj) + eps(0));
         normal_CV = (CV - min(CV)) ./ (std(CV) + eps(0));
 
@@ -140,8 +140,8 @@ methods
     end
 
     function population = Selection(Algo, population, offspring, weights)
-        Obj = [population.Objs', offspring.Objs'];
-        CV = [population.CVs', offspring.CVs'];
+        Obj = [Objs(population)', Objs(offspring)'];
+        CV = [CVs(population)', CVs(offspring)'];
         normal_Obj = (Obj - min(Obj)) ./ (std(Obj) + eps(0));
         normal_CV = (CV - min(CV)) ./ (std(CV) + eps(0));
 

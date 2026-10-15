@@ -50,7 +50,7 @@ methods
         % Initialization
         population = Initialization(Algo, Prob, IndividualSBO);
         for t = 1:Prob.T
-            [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+            [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
             for i = 1:length(population{t})
                 population{t}(rank(i)).rankO = i;
                 population{t}(rank(i)).MFFactor = t;
@@ -96,14 +96,14 @@ methods
 
                 % Evaluation
                 offspring{t} = Algo.Evaluation(offspring{t}, Prob, t);
-                [~, rank] = sortrows([offspring{t}.CVs, offspring{t}.Objs], [1, 2]);
+                [~, rank] = sortrows([CVs(offspring{t}), Objs(offspring{t})], [1, 2]);
                 for i = 1:length(rank)
                     offspring{t}(rank(i)).rankC = i;
                 end
 
                 % selection
                 population{t} = [population{t}, offspring{t}];
-                [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                 population{t} = population{t}(rank(1:Prob.N));
                 rank = 1:Prob.N;
                 for i = 1:length(rank)

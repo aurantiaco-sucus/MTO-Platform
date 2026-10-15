@@ -18,8 +18,8 @@ end
 N = length(population);
 pool = [population, offspring];
 
-AllCV = pool.CVs;
-AllObj = pool.Objs;
+AllCV = CVs(pool);
+AllObj = Objs(pool);
 
 AllCV(AllCV <= Ep) = 0;
 

@@ -37,9 +37,9 @@ methods
             ce{t} = 2 / (n{t}.^2);
             ep{t} = 10e-6;
             p{t} = zeros(1, maxn);
-            [~, rank{t}] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+            [~, rank{t}] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
             H{t} = 6 + round(3 * sqrt(n{t}));
-            xH{t}(1, :, :) = population{t}(rank{t}(1:mu)).Decs;
+            xH{t}(1, :, :) = Decs(population{t}(rank{t}(1:mu)));
             deltaH{t} = zeros(1, maxn);
             pH{t} = zeros(1, maxn);
         end
@@ -47,7 +47,7 @@ methods
         while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 oldDec = mDec{t};
-                mDec{t} = mean(population{t}(rank{t}(1:mu)).Decs);
+                mDec{t} = mean(Decs(population{t}(rank{t}(1:mu))));
                 Algo.Mean{t} = mDec{t};
                 delta = mDec{t} - oldDec;
                 p{t} = (1 - cc{t}) * p{t} + sqrt(cc{t} * (2 - cc{t}) * mu) * delta;
@@ -70,7 +70,7 @@ methods
                 rank{t} = RankWithBoundaryHandling(population{t}, Prob);
 
                 x = [];
-                x(1, :, :) = population{t}(rank{t}(1:mu)).Decs;
+                x(1, :, :) = Decs(population{t}(rank{t}(1:mu)));
                 xH{t} = [xH{t}; x];
                 if size(xH{t}, 1) > H{t}
                     xH{t}(1:end - H{t}, :, :) = [];

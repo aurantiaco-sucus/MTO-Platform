@@ -79,7 +79,7 @@ methods
             difference = inf .* ones(Prob.T);
             for t = 1:Prob.T - 1
                 for k = t + 1:Prob.T
-                    difference(t, k) = Algo.mmd(population{t}.Decs', population{k}.Decs', Algo.Sigma);
+                    difference(t, k) = Algo.mmd(Decs(population{t})', Decs(population{k})', Algo.Sigma);
                     difference(k, t) = difference(t, k);
                 end
             end
@@ -140,13 +140,13 @@ methods
             clusterModel(i).Nich_mean = zeros(K, dim);
             clusterModel(i).Nich_std = zeros(K, dim);
             Subpop = TempPopulation{i};
-            SubpopRnvec = Subpop.Decs;
+            SubpopRnvec = Decs(Subpop);
             temp_difference = difference(i, :);
             [~, index] = sort(temp_difference);
             %--------------Generate clusters by k-means--------------------------
             for j = 1:knowledge_task_num
                 Selected_population = population{index(j)};
-                SubpopRnvec = [SubpopRnvec; Selected_population.Decs];
+                SubpopRnvec = [SubpopRnvec; Decs(Selected_population)];
             end
             [idx, ~] = kmeans(SubpopRnvec, K, 'Distance', 'cityblock', 'MaxIter', 30);
             for ii = 1:length(Subpop)

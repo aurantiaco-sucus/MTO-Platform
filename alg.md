@@ -9,24 +9,24 @@ Decision rules are in `AGENTS.md`. Summary:
 
 | Status | Count | Meaning |
 | --- | --- | --- |
-| IN | 128 | Runs on Octave + Forge `statistics`. No external software. |
-| PENDING | 5 | One bounded local fix (shim) required. See below. |
+| IN | 133 | Runs on Octave + Forge `statistics` plus the local `mapminmax` / `lhsdesign` shims. No external software. |
+| PENDING | 0 | No missing helper remains; full runtime inventory is still unverified. |
 | OUT | 7 | Excluded: MathWorks toolbox, Python, or foreign toolbox. |
 
-Every in-scope algorithm additionally needs the four framework parser patches listed in
-`AGENTS.md` — those are shared base-class fixes, not per-algorithm work.
+Every in-scope algorithm additionally needs the shared Octave compatibility fixes listed in
+`AGENTS.md` — those are framework-wide, not per-algorithm work.
 
 `stats` and `kmeans` are **not** exclusions: Octave Forge `statistics` provides them,
 verified against the call shapes used here.
 
-## Single-task (SO) — 42 classes (37 in, 1 pending, 4 out)
+## Single-task (SO) — 42 classes (38 in, 0 pending, 4 out)
 
 | Class | Folder | Deps | Status |
 | --- | --- | --- | --- |
 | `C2oDE` | `Constraint Handling/C2oDE` | — | IN |
 | `CAL_SHADE` | `Constraint Handling/CAL-SHADE` | stats | IN |
 | `CCEF_ECHT` | `Constraint Handling/CCEF-ECHT` | — | IN |
-| `CEDE_DRL` | `Constraint Handling/CEDE-DRL` | DL Toolbox | PENDING |
+| `CEDE_DRL` | `Constraint Handling/CEDE-DRL` | mapminmax shim | IN |
 | `CORCO` | `Constraint Handling/CORCO` | — | IN |
 | `DeCODE` | `Constraint Handling/DeCODE` | — | IN |
 | `ECHT` | `Constraint Handling/ECHT` | — | IN |
@@ -66,7 +66,7 @@ verified against the call shapes used here.
 | `MPA` | `Swarm Intelligence/MPA` | — | IN |
 | `PSO` | `Swarm Intelligence/PSO` | — | IN |
 
-## Multi-task (MTSO) — 52 classes (48 in, 3 pending, 1 out)
+## Multi-task (MTSO) — 52 classes (51 in, 0 pending, 1 out)
 
 | Class | Folder | Deps | Status |
 | --- | --- | --- | --- |
@@ -115,13 +115,13 @@ verified against the call shapes used here.
 | `MTDE_ADKT` | `Multi-population/MTDE-ADKT` | stats | IN |
 | `MTEA_AD` | `Multi-population/MTEA-AD` | stats | IN |
 | `MTEA_HKTS` | `Multi-population/MTEA-HKTS` | — | IN |
-| `MTEA_PAE` | `Multi-population/MTEA-PAE` | lhsdesign | PENDING |
+| `MTEA_PAE` | `Multi-population/MTEA-PAE` | lhsdesign shim (pinned profile) | IN |
 | `MTEA_SaO` | `Multi-population/MTEA-SaO` | — | IN |
 | `MTES` | `Multi-population/MTES` | — | IN |
 | `MTES_KG` | `Multi-population/MTES-KG` | — | IN |
 | `sep_MTES_KG` | `Multi-population/MTES-KG` | — | IN |
-| `SSLT_DE` | `Multi-population/SSLT` | DL Toolbox | PENDING |
-| `SSLT_GA` | `Multi-population/SSLT` | DL Toolbox | PENDING |
+| `SSLT_DE` | `Multi-population/SSLT` | mapminmax shim | IN |
+| `SSLT_GA` | `Multi-population/SSLT` | mapminmax shim | IN |
 
 ## Multi-objective Single-task (MTSO) — 15 classes (15 in, 0 pending, 0 out)
 
@@ -143,7 +143,7 @@ verified against the call shapes used here.
 | `SPEA2` | `Non-dominated Sort/SPEA2` | — | IN |
 | `SPEA2_DE` | `Non-dominated Sort/SPEA2` | — | IN |
 
-## Multi-objective Multi-task (MTMO) — 22 classes (19 in, 1 pending, 2 out)
+## Multi-objective Multi-task (MTMO) — 22 classes (20 in, 0 pending, 2 out)
 
 | Class | Folder | Deps | Status |
 | --- | --- | --- | --- |
@@ -162,7 +162,7 @@ verified against the call shapes used here.
 | `MMTO_ETA` | `Multi-population/MMTO-ETA` | stats | IN |
 | `MMTO_TGT` | `Multi-population/MMTO-TGT` | SOM Toolbox, kmeans, stats | OUT |
 | `MO_EMEA` | `Multi-population/MO-EMEA` | — | IN |
-| `MO_MTEA_PAE` | `Multi-population/MO-MTEA-PAE` | lhsdesign | PENDING |
+| `MO_MTEA_PAE` | `Multi-population/MO-MTEA-PAE` | lhsdesign shim (pinned profile) | IN |
 | `MO_MTEA_SaO` | `Multi-population/MO-MTEA-SaO` | — | IN |
 | `MOMFEA_SADE` | `Multi-population/MOMFEA-SADE` | — | IN |
 | `MTDE_MKTA` | `Multi-population/MTDE-MKTA` | stats | IN |
@@ -194,10 +194,9 @@ verified against the call shapes used here.
 - **MFEA_VC** (`Multi-task/Multi-factorial/MFEA-VC`) — Deep Learning Toolbox (dlnetwork/dlarray + nnet.layer.Layer subclasses)
 - **MMTO_TGT** (`Multi-objective Multi-task/Multi-population/MMTO-TGT`) — SOM Toolbox (vendored 128-file third-party library)
 
-## Pending — required fix
+## Runtime validation notes
 
-- **CEDE_DRL** (`Single-task/Constraint Handling/CEDE-DRL`) — mapminmax (Deep Learning Toolbox) — shim needed
-- **MO_MTEA_PAE** (`Multi-objective Multi-task/Multi-population/MO-MTEA-PAE`) — lhsdesign (Stats Toolbox) — missing from Octave Forge statistics
-- **MTEA_PAE** (`Multi-task/Multi-population/MTEA-PAE`) — lhsdesign (Stats Toolbox) — missing from Octave Forge statistics
-- **SSLT_DE** (`Multi-task/Multi-population/SSLT`) — mapminmax (Deep Learning Toolbox) — shim needed
-- **SSLT_GA** (`Multi-task/Multi-population/SSLT`) — mapminmax (Deep Learning Toolbox) — shim needed
+The former `mapminmax` and `lhsdesign` shim dependencies are now covered locally. The two
+PAE algorithms complete smoke runs with the pinned Octave LHS profile; exact MATLAB internal
+LHS draw-count parity is unverified. `SSLT_DE`, `SSLT_GA`, and `CEDE_DRL` have the local
+`mapminmax` dependency satisfied, but their long model-training branches are not yet smoke-run.

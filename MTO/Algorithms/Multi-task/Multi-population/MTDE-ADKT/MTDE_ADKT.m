@@ -78,13 +78,13 @@ methods
             Hidx{t} = 1;
             MF{t} = 0.5 .* ones(Algo.H, 1);
             MCR{t} = 0.5 .* ones(Algo.H, 1);
-            archive{t} = Individual_DE.empty();
+            archive{t} = repmat(Individual_DE(), 0, 0);
             r_suc1{t} = [1];
             r_suc2{t} = [1];
             r_suc3{t} = [1];
             rmp1{t} = [];
             rmp2{t} = [];
-            mDec(t, :) = mean(population{t}.Decs);
+            mDec(t, :) = mean(Decs(population{t}));
         end
 
         while Algo.notTerminated(Prob, population)
@@ -135,11 +135,11 @@ methods
                 replace2 = false(1, 0);
                 replace3 = false(1, 0);
 
-                offspring1 = Individual_DE.empty();
-                offspring2 = Individual_DE.empty();
-                offspring3 = Individual_DE.empty();
+                offspring1 = repmat(Individual_DE(), 0, 0);
+                offspring2 = repmat(Individual_DE(), 0, 0);
+                offspring3 = repmat(Individual_DE(), 0, 0);
 
-                [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                 pop_pbest = rank(1:max(round(Algo.P * length(population{t})), 1));
 
                 transfer_idx = randperm(length(population{k}), length(parent1) + length(parent2));
@@ -151,7 +151,7 @@ methods
                     unionS = population{k};
 
                     transpop1 = population{k}(transfer_idx1);
-                    transpop1_Decs = Algo.D_Align(unionS.Decs, unionT.Decs, mDec, t, k, transfer_idx1);
+                    transpop1_Decs = Algo.D_Align(Decs(unionS), Decs(unionT), mDec, t, k, transfer_idx1);
                     for i = 1:length(transfer_idx1)
                         transpop1(i).Dec = transpop1_Decs(i, :);
                     end
@@ -199,8 +199,8 @@ methods
                 % calculate SF SCR
                 SF = [population{t}(replace).F];
                 SCR = [population{t}(replace).CR];
-                dif = population{t}(replace).CVs' - offspring(replace).CVs';
-                dif_obj = population{t}(replace).Objs' - offspring(replace).Objs';
+                dif = CVs(population{t}(replace))' - CVs(offspring(replace))';
+                dif_obj = Objs(population{t}(replace))' - Objs(offspring(replace))';
                 dif_obj(dif_obj < 0) = 0;
                 dif(dif <= 0) = dif_obj(dif <= 0);
                 dif = dif ./ sum(dif);
@@ -246,7 +246,7 @@ methods
             if ~reduce_flag && Algo.FE >= Prob.maxFE * Algo.Alpha
                 N = round(Prob.N / 2);
                 for t = 1:Prob.T
-                    [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                    [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                     % save to archive
                     archive{t} = [archive{t}, population{t}(rank(N + 1:end))];
                     if length(archive{t}) > Prob.N
@@ -259,7 +259,7 @@ methods
             end
 
             for t = 1:Prob.T
-                mDec(t, :) = (1 - Algo.Beta) .* mDec(t, :) + Algo.Beta .* mean(population{t}.Decs);
+                mDec(t, :) = (1 - Algo.Beta) .* mDec(t, :) + Algo.Beta .* mean(Decs(population{t}));
             end
         end
     end

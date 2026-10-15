@@ -92,7 +92,9 @@ methods
             sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             eigenFE{t} = 0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
-            sample{t}(1, lambda{t}) = Individual();
+            sampleArray = Individual();
+            sampleArray(1, lambda{t}) = Individual();
+            sample{t} = sampleArray;
         end
 
         taskFE = zeros(1, Prob.T);
@@ -112,14 +114,14 @@ methods
 
                 % Update mean decision variables
                 oldDec = mDec{t};
-                mDec{t} = weights{t} * sample{t}(rank{t}(1:mu{t})).Decs;
+                mDec{t} = weights{t} * Decs(sample{t}(rank{t}(1:mu{t})));
                 Algo.Mean{t} = mDec{t};
                 % Update evolution paths
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff{t}) * invsqrtC{t} * (mDec{t} - oldDec)' / sigma{t};
                 hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * taskFE(t) / lambda{t})) / chiN{t} < 1.4 + 2 / (n{t} + 1);
                 pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff{t}) * (mDec{t} - oldDec)' / sigma{t};
                 % Update covariance matrix
-                artmp = (sample{t}(rank{t}(1:mu{t})).Decs - oldDec)' / sigma{t};
+                artmp = (Decs(sample{t}(rank{t}(1:mu{t}))) - oldDec)' / sigma{t};
                 delta = (1 - hsig) * cc{t} * (2 - cc{t});
                 C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t} * pc{t}' + delta * C{t}) + cmu{t} * artmp * diag(weights{t}) * artmp';
                 % Update step size

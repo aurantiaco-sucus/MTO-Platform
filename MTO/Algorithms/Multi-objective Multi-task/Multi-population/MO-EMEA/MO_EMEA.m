@@ -58,7 +58,7 @@ methods
 
         init_pop_dec = {};
         for t = 1:Prob.T
-            init_pop_dec{t} = population{t}.Decs;
+            init_pop_dec{t} = Decs(population{t});
             init_pop_dec{t} = init_pop_dec{t}(:, 1:Prob.D(t));
         end
 
@@ -71,14 +71,14 @@ methods
                 % Knowledge Transfer
                 if Algo.SNum > 0 && mod(Algo.Gen, Algo.TGap) == 0
                     inject_num = round(Algo.SNum ./ (Prob.T - 1));
-                    inject_pop = Individual.empty();
+                    inject_pop = repmat(Individual(), 0, 0);
                     for k = 1:Prob.T
                         if t == k
                             continue;
                         end
 
                         % extract best dec
-                        his_pop_dec = population{k}.Decs;
+                        his_pop_dec = Decs(population{k});
                         his_best_dec = his_pop_dec(1:inject_num, 1:Prob.D(k));
 
                         % autoencoding transfer

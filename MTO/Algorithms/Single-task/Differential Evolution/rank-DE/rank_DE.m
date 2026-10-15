@@ -57,7 +57,7 @@ methods
 
     function offspring = Generation(Algo, population)
         % calculate rank
-        [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
+        [~, rank] = sortrows([CVs(population), Objs(population)], [1, 2]);
         [~, rank] = sort(rank);
 
         for i = 1:length(population)

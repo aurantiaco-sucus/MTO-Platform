@@ -8,6 +8,21 @@ Full inventory: `prob.md`. In-scope worklist: `prob_incl.md`. Contract: `interfa
 
 Paths are relative to `MTO/Problems/` unless stated otherwise.
 
+
+## Verified progress (2026-10-15)
+
+All eleven problem pilots have now been exercised by the headless smoke scripts:
+
+- `Func_Sphere`, `DTLZ1`, `CMT1`, and `CEC17_MTSO1_CI_HS` through the core pilots.
+- `CEC17_SO1` and all 87 tasks of `MaT_CEC17_SO` through a temporary CEC17 MEX build in
+  `tests/octave_mex_smoke.m`; the CEC17 shift-vector optimum is exactly zero after normalization.
+- `CEC17_CSO1` through ECHT; `CEC19_MaTMO1` through a three-task MO_MFEA run; and
+  `SOPM_MTMO1` through a constrained multi-objective multitask run.
+- `AMTSO_Case1_P1` through AEMEA's staggered-arrival stream run, and `C2TOP_Case1_P1` through
+  the MFEA competitive-suite smoke.
+
+The full problem inventory has not been run.
+
 ## Selection principle
 
 Problems differ from algorithms in one important way: **within a suite the classes are

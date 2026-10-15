@@ -26,13 +26,17 @@ for t = 1:T
     % Generate Random Decision Variables
     PopDec = rand(N, maxD); % Decision variables in [0,1]
     DecCell = num2cell(PopDec, 2);
-    [pop_t.Dec] = deal(DecCell{:});
+    for i = 1:N
+        pop_t(i).Dec = DecCell{i};
+    end
 
     % Evaluate Initial Sub-population for task t
     pop_t = Algo.Evaluation(pop_t, Prob, t);
 
     % Assign MFFactor
-    [pop_t.MFFactor] = deal(t);
+    for i = 1:numel(pop_t)
+        pop_t(i).MFFactor = t;
+    end
     population(idx_start:idx_end) = pop_t;
 end
 end

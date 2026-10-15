@@ -64,12 +64,12 @@ methods
                     kpool = kpool(randperm(Prob.T - 1, min(Prob.T - 1, 10))); % Reduce time complexity in many-task
                     his_pop_dec = [];
                     for k = kpool
-                        his_pop_dec = [his_pop_dec; population{k}.Decs];
+                        his_pop_dec = [his_pop_dec; Decs(population{k})];
                     end
 
-                    tfsol = Algo.learn_anomaly_detection(offspring.Decs, his_pop_dec, NL);
+                    tfsol = Algo.learn_anomaly_detection(Decs(offspring), his_pop_dec, NL);
 
-                    transfer_pop = Individual.empty();
+                    transfer_pop = repmat(Individual(), 0, 0);
                     for i = 1:size(tfsol, 1)
                         c = Individual();
                         c.Dec = tfsol(i, :);

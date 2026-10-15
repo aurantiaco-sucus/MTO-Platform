@@ -93,7 +93,7 @@ methods
         other_task = 1:length(population);
         other_task(other_task == t) = [];
         for t = 1:length(population)
-            pop_Dec{t} = population{t}.Decs;
+            pop_Dec{t} = Decs(population{t});
         end
 
         x1_task = other_task(randi(length(other_task)));
@@ -146,7 +146,7 @@ methods
     function Best = getBest(Algo, population)
         Best = {};
         for t = 1:length(population)
-            FrontNo = NDSort(population{t}.Objs, population{t}.CVs, inf);
+            FrontNo = NDSort(Objs(population{t}), CVs(population{t}), inf);
             Best{t} = find(FrontNo == 1);
         end
     end
