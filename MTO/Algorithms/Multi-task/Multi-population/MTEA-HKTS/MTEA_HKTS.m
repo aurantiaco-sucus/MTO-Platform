@@ -64,7 +64,7 @@ methods
     end
 
     function run(Algo, Prob)
-        operator = split(Algo.Operator, '/');
+        operator = strsplit(Algo.Operator, '/');
         % initialize
         population = Initialization(Algo, Prob, Individual_DE);
         if max(Prob.M) > 1

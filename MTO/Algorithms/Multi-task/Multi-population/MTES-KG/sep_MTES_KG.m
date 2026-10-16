@@ -69,9 +69,7 @@ methods
             C{t} = ones(n, 1);
             sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             eigenFE{t} = 0;
-            for i = 1:lambda
-                sample{t}(i) = Individual();
-            end
+            sample{t} = repmat(Individual(), 1, lambda);
             mStep{t} = 0; % mean sample step
             numExS{t} = []; % external sapmle number memory
             sucExS{t} = []; % external sapmle success number memory

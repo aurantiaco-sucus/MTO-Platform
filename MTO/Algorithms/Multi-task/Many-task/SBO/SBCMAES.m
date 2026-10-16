@@ -75,8 +75,8 @@ methods
 
         % Initialization
         for t = 1:Prob.T
+            population{t} = repmat(IndividualSBO(), 1, lambda);
             for i = 1:lambda
-                population{t}(i) = IndividualSBO();
                 population{t}(i).Dec = mDec{t} + sigma{t} * (MB{t} * (MD{t} .* randn(D, 1)))';
             end
             population{t} = Algo.Evaluation(population{t}, Prob, t);

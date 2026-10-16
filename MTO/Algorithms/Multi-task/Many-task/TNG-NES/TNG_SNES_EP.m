@@ -80,9 +80,7 @@ methods
             chiN{t} = sqrt(maxD) * (1 - 1 / (4 * maxD) + 1 / (21 * maxD^2));
             hth{t} = (1.4 + 2 / (maxD + 1)) * chiN{t};
 
-            for i = 1:N
-                sample{t}(i) = Individual();
-            end
+            sample{t} = repmat(Individual(), 1, N);
         end
         vx = x; % virtual x for adaptive transfer control
         vS = S; % virtual S for adaptive transfer control

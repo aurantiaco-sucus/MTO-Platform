@@ -61,9 +61,7 @@ methods
             Algo.Mean{t} = x{t}';
             S{t} = Algo.sigma0 * initESSigmaScale(Prob, t) * ones(Prob.D(t), 1); % Sigma vector
             weights{t} = zeros(1, N{t});
-            for i = 1:N{t}
-                sample{t}(i) = Individual();
-            end
+            sample{t} = repmat(Individual(), 1, N{t});
         end
 
         taskFE = zeros(1, Prob.T);

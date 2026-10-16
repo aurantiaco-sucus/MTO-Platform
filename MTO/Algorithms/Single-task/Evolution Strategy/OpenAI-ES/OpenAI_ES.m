@@ -64,7 +64,7 @@ methods
             m{t} = zeros(Prob.D(t), 1);
             v{t} = zeros(Prob.D(t), 1);
 
-            sample{t}(1:N) = Individual();
+            sample{t} = repmat(Individual(), 1, N);
             sigma{t} = Algo.sigma * initESSigmaScale(Prob, t);
         end
 

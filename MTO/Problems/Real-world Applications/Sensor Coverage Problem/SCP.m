@@ -40,8 +40,8 @@ properties
 end
 
 methods
-    function Prob = SCP(name)
-        Prob = Prob@Problem(name);
+    function Prob = SCP(varargin)
+        Prob = Prob@Problem(varargin{:});
         Prob.maxFE = 1000 * 50 * (Prob.Nmax - Prob.Nmin + 1);
     end
 

@@ -232,7 +232,9 @@ methods
                     end
 
                     % Update operator DE archive
-                    archive{t, ch} = [archive{t, ch}, population{t, ch}(replace)];
+                    if any(replace)
+                        archive{t, ch} = [archive{t, ch}, population{t, ch}(replace)];
+                    end
                     if length(archive{t, ch}) > Prob.N
                         archive{t, ch} = archive{t, ch}(randperm(length(archive{t, ch}), Prob.N));
                     end

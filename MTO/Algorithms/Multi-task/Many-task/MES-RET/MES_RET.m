@@ -253,9 +253,7 @@ methods
             CMA.invsqrtC{t} = CMA.B{t} * diag(CMA.D{t}.^-1) * CMA.B{t}';
             CMA.sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             CMA.eigenFE{t} = 0;
-            for i = 1:CMA.lambda{t}
-                CMA.sample{t}(i) = Individual();
-            end
+            CMA.sample{t} = repmat(Individual(), 1, CMA.lambda{t});
             CMA.PreviousPara{t} = [];
             CMA.obj_init{t} = 0;
             CMA.cv_init{t} = 0;

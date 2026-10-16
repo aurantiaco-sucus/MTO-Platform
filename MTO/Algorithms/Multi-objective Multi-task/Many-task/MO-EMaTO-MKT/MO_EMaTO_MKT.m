@@ -104,6 +104,7 @@ methods
         for t = 1:length(population)
             indorder = randperm(length(population{t}));
             count = 1;
+            offspring{t} = repmat(Individual_MKT(), 1, 2 * ceil(length(population{t}) / 2));
             for i = 1:ceil(length(population{t}) / 2)
                 p1 = indorder(i);
                 p2 = indorder(i + fix(length(population{t}) / 2));

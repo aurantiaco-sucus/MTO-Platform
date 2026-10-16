@@ -1,4 +1,4 @@
-classdef Individual_MFPSO < Individual_PSO & Individual_MF
+classdef Individual_MFPSO < Individual_MF
 %% Individual for MFPSO
 
 %------------------------------- Copyright --------------------------------
@@ -8,4 +8,14 @@ classdef Individual_MFPSO < Individual_PSO & Individual_MF
 % S. Li, Q. Gu, and Y.-S. Ong, MToP: A MATLAB Benchmarking Platform for
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
+
+% Octave does not accept the diamond inheritance used by the MATLAB source
+% (Individual_PSO & Individual_MF).  Individual_MF already supplies the
+% common Individual state, so keep the PSO-specific state here directly.
+properties
+    PBestDec
+    PBestObj
+    PBestCV
+    V = 0
+end
 end

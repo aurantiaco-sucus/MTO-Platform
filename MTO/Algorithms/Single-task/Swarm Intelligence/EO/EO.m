@@ -49,8 +49,8 @@ methods
         population = Initialization(Algo, Prob, Individual);
         dim = max(Prob.D);
         for t = 1:Prob.T
+            Ceq{t} = repmat(Individual(), 1, 4);
             for i = 1:4
-                Ceq{t}(i) = Individual();
                 Ceq{t}(i).Dec = zeros(1, dim);
                 Ceq{t}(i).Obj = inf;
                 Ceq{t}(i).CV = inf;

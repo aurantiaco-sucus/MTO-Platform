@@ -196,7 +196,9 @@ methods
     function archive = putarchive(Algo, archive, task_idx, individual, N)
         max_size = Algo.ArcMultip * N;
         archive_size = size(archive{task_idx}, 1);
-        if archive_size < max_size
+        if archive_size == 0
+            archive{task_idx} = individual;
+        elseif archive_size < max_size
             archive_size = archive_size + 1;
             archive{task_idx}(archive_size, 1) = individual;
         else

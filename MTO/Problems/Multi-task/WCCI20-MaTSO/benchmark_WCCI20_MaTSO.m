@@ -37,10 +37,10 @@ end
 for task_id = 1:task_size
     func_id = choice_functions(mod(task_id - 1, length(choice_functions)) + 1);
     current_dir = fileparts(mfilename('fullpath'));
-    file_dir = fullfile(current_dir, strcat("Tasks/benchmark_", string(ID)));
+    file_dir = fullfile(current_dir, strcat("Tasks/benchmark_", num2str(ID)));
 
-    shift_file = strcat("/bias_", string(task_id));
-    rotation_file = strcat("/matrix_", string(task_id));
+    shift_file = strcat("/bias_", num2str(task_id));
+    rotation_file = strcat("/matrix_", num2str(task_id));
     matrix = load(strcat(file_dir, rotation_file), '-ascii');
     shift = load(strcat(file_dir, shift_file), '-ascii');
     switch func_id

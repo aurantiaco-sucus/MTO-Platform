@@ -198,5 +198,11 @@ verified against the call shapes used here.
 
 The former `mapminmax` and `lhsdesign` shim dependencies are now covered locally. The two
 PAE algorithms complete smoke runs with the pinned Octave LHS profile; exact MATLAB internal
-LHS draw-count parity is unverified. `SSLT_DE`, `SSLT_GA`, and `CEDE_DRL` have the local
-`mapminmax` dependency satisfied, but their long model-training branches are not yet smoke-run.
+LHS draw-count parity is unverified. `SSLT_DE`, `SSLT_GA`, and `CEDE_DRL` have completed
+low-budget runs, but their long model-training branches are not yet smoke-run.
+
+The maintained `tests/octave_algorithm_smoke.m` runner exercises all **133 IN classes** at
+least once with representative low-budget fixtures. This is runtime smoke coverage, not
+exhaustive parameter/branch or result-parity coverage. Constructors for all 140 catalog
+classes were also checked; the seven OUT classes remain excluded from runtime support
+regardless of constructor success.

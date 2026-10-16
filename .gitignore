@@ -12,3 +12,5 @@ __pycache__
 
 # github files
 .github/
+# generated Planar Kinematic Arm Control centroid cache
+MTO/Problems/Real-world Applications/Planar Kinematic Arm Control Problem/cvt_d20_nt20.mat

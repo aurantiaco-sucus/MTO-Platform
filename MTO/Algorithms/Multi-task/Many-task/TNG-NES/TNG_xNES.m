@@ -71,9 +71,7 @@ methods
             s(t) = Algo.sigma0 * initESSigmaScale(Prob, t);
             vvs(t) = s(t);
             B(:, :, t) = eye(maxD);
-            for i = 1:N
-                sample{t}(i) = Individual();
-            end
+            sample{t} = repmat(Individual(), 1, N);
         end
         vx = x;
         vs = s;

@@ -48,7 +48,7 @@ methods
     end
 
     function run(Algo, Prob)
-        operator = split(Algo.Operator, '/');
+        operator = strsplit(Algo.Operator, '/');
 
         % Initialize
         population = Initialization(Algo, Prob, Individual);

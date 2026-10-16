@@ -59,9 +59,7 @@ methods
             Algo.Mean{t} = x{t}';
 
             % Initialize individuals
-            for i = 1:N
-                sample{t}(i) = Individual();
-            end
+            sample{t} = repmat(Individual(), 1, N);
 
             % Initial sigma per task
             sigma_init{t} = Algo.sigma * initESSigmaScale(Prob, t);

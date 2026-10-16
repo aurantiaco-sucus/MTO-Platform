@@ -250,9 +250,7 @@ methods
             CMA.pc{t} = zeros(CMA.n{t}, 1);
             CMA.C{t} = ones(CMA.n{t}, 1);
             CMA.sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
-            for i = 1:CMA.lambda{t}
-                CMA.sample{t}(i) = Individual();
-            end
+            CMA.sample{t} = repmat(Individual(), 1, CMA.lambda{t});
             CMA.PreviousPara{t} = [];
             CMA.obj_init{t} = 0;
             CMA.cv_init{t} = 0;

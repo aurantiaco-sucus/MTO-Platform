@@ -65,10 +65,8 @@ methods
             vs{t} = s{t};
             B{t} = eye(Prob.D(t)); % B = A/s; A*A' = C = covariance matrix
             weights{t} = zeros(1, N{t});
-            for i = 1:N{t}
-                sample{t}(i) = Individual();
-                sample2{t}(i) = Individual();
-            end
+            sample{t} = repmat(Individual(), 1, N{t});
+            sample2{t} = repmat(Individual(), 1, N{t});
         end
 
         taskFE = zeros(1, Prob.T);

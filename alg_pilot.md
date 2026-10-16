@@ -238,13 +238,11 @@ Not covered by a dedicated pilot, and why:
 
 These are shared, not per-pilot, and all are described in `AGENTS.md`:
 
-- All ten need the four base-class fixes before anything loads. The `jDE`/`GA`/`DE` group
-  is the fastest way to confirm those fixes, because their error will be a parse failure
-  rather than a wrong number.
-- All ten rely on **dot-notation bulk accessors** on object arrays (`pop.Decs`, `pop.Objs`,
-  `pop.CVs`). Under Octave these silently return the first element only. Pilot 1 is where
-  this must be settled, since it is the smallest surface on which the wrong answer is
-  visible.
+- The base-class syntax and array-access compatibility blockers identified during planning
+  have been repaired; see `AGENTS.md` for the exact changes and their validation status.
+- Bulk object-array access must use function form (`Decs(pop)`, `Objs(pop)`, `CVs(pop)`,
+  `Cons(pop)`). The former Octave dot-notation dispatch issue is fixed across the tree; do
+  not reintroduce `pop.Decs`-style calls in new code.
 - All ten depend on `rand`-consumption order for reproducibility. When fixing compatibility,
   do not reorder or replace random draws, even with equivalent-looking ones.
 - Pilots 2, 5 and 9 pass a representation class into the initializer, so they are the ones

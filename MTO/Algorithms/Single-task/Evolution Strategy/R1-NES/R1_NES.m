@@ -59,9 +59,7 @@ methods
             u{t} = r{t} * v{t};
 
             weights{t} = zeros(1, N{t});
-            for i = 1:N{t}
-                sample{t}(i) = Individual();
-            end
+            sample{t} = repmat(Individual(), 1, N{t});
         end
 
         taskFE = zeros(1, Prob.T);

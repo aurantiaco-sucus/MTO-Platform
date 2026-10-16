@@ -79,6 +79,21 @@ Algo = CMA_ES();
 Algo.run(Prob);
 assert(Algo.FE == 20);
 
+% Additional evolution strategies exercise Octave-safe value-class preallocation.
+Prob = Func_Sphere();
+Prob.N = 10;
+Prob.maxFE = 30;
+Algo = IPOP_CMA_ES();
+Algo.run(Prob);
+assert(Algo.FE == 30);
+
+Prob = Func_Sphere();
+Prob.N = 10;
+Prob.maxFE = 20;
+Algo = OpenAI_ES();
+Algo.run(Prob);
+assert(Algo.FE == 20);
+
 % Multi-objective sorting and multifactorial initialization/selection.
 Prob = DTLZ1();
 Prob.N = 10;
@@ -121,6 +136,42 @@ Prob.maxFE = 60;
 Algo = MFEA_II();
 Algo.run(Prob);
 assert(Algo.FE == 60);
+
+% Many-task archive initialization and shared evolutionary-strategy populations.
+for AlgoClass = {@MaTDE, @SBCMAES, @sep_SBCMAES, @MFPSO}
+    Prob = CMT1();
+    Prob.N = 10;
+    Prob.maxFE = 40;
+    Algo = AlgoClass{1}();
+    Algo.run(Prob);
+    assert(Algo.FE >= 40);
+end
+
+% Many-task operator parsing uses the Octave-supported string splitter.
+Prob = CMT1();
+Prob.N = 10;
+Prob.maxFE = 40;
+Algo = KR_MTEA();
+Algo.run(Prob);
+assert(Algo.FE >= 40);
+
+% The four-strategy constrained portfolios must tolerate an empty archive update.
+for AlgoClass = {@CCEF_ECHT, @CEDE_DRL}
+    Prob = Func_Sphere();
+    Prob.N = 10;
+    Prob.maxFE = 20;
+    Algo = AlgoClass{1}();
+    Algo.run(Prob);
+    assert(Algo.FE == 20);
+end
+
+% CORCO's initial diversity state is defined even when its learning phase is skipped.
+Prob = Func_Sphere();
+Prob.N = 10;
+Prob.maxFE = 20;
+Algo = CORCO();
+Algo.run(Prob);
+assert(Algo.FE == 20);
 
 % Many-task clustering and Forge k-means on a synthetic ten-task sphere suite.
 rng(23);
@@ -165,6 +216,23 @@ Algo = MO_MFEA();
 Algo.run(Prob);
 assert(Algo.FE == 40);
 
+% Many-task archive initialization and cluster-model offspring preallocation.
+rng(41);
+Prob = CEC17_MTMO1_CI_HS();
+Prob.N = 10;
+Prob.maxFE = 40;
+Algo = MO_MaTDE();
+Algo.run(Prob);
+assert(Algo.FE == 40);
+
+rng(42);
+Prob = CEC17_MTMO1_CI_HS();
+Prob.N = 10;
+Prob.maxFE = 40;
+Algo = MO_EMaTO_MKT();
+Algo.run(Prob);
+assert(Algo.FE == 40);
+
 % Bulk text data with non-uniform task domains in the CEC19 MaTMO suite.
 rng(43);
 Prob = CEC19_MaTMO1();
@@ -202,6 +270,18 @@ StreamProb.setTasks();
 StreamAlgo = AEMEA();
 StreamAlgo.TGap = 1;
 StreamAlgo.SNum = 2;
+StreamAlgo.run(StreamProb);
+assert(StreamAlgo.FE == 24);
+assert(isequal(StreamAlgo.TaskFE, [12, 12]));
+
+% AMTEA-AD transfer candidates exercise safe extension of a value-class batch.
+rng(123);
+StreamProb = AMTSO_Case1_P1();
+StreamProb.N = 4;
+StreamProb.maxFE = 24;
+StreamProb.setTasks();
+StreamAlgo = AMTEA_AD();
+StreamAlgo.TRP = 1;
 StreamAlgo.run(StreamProb);
 assert(StreamAlgo.FE == 24);
 assert(isequal(StreamAlgo.TaskFE, [12, 12]));

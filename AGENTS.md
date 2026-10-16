@@ -97,15 +97,18 @@ the licensing note) that is not worth porting.
 There is no local MATLAB, so MATLAB parity cannot be checked directly here. Treat
 MATLAB behaviour as the specification and flag anything you cannot confirm.
 
-## Current state (verified 2026-10-15)
+## Current state (verified 2026-10-16)
 
 The first Octave end-to-end smoke runs now pass. This supersedes the earlier checkpoint
 history below, which described the repository before the compatibility changes were applied.
 
-Run the maintained smoke suite from the repository root (or by its absolute path):
+Run the maintained regression smoke suite and the full in-scope algorithm sweep from the
+repository root (or by their absolute paths):
 
 ```bash
 octave --norc -q tests/octave_smoke.m
+octave --norc -q tests/octave_algorithm_smoke.m
+octave --norc -q tests/octave_problem_smoke.m
 ```
 
 Verified with GNU Octave 11.3.0 and Forge `statistics` 2.0.0:
@@ -132,11 +135,12 @@ Verified with GNU Octave 11.3.0 and Forge `statistics` 2.0.0:
 - `mapminmax` passes row-wise scaling, stateful apply/reverse, constant-row, and round-trip checks; its neural-training callers are not yet end-to-end run.
 - The CEC19-MaTMO data loader preserves shift-vector and rotation-matrix shapes with Octave ASCII loading; a three-task MO_MFEA run passes.
 - The bulk `Individual` accessors return all rows when invoked in function form.
+- `tests/octave_algorithm_smoke.m` executes **all 133 in-scope algorithm classes** with family-appropriate low-budget fixtures (single-task Sphere, multi-task CMT1/synthetic Sphere, multi-objective DTLZ1/CEC17 MTMO, and the AMTSO stream suite). Some algorithms require larger populations or budgets than the pilot's `N=10` fixture; the runner records those cases explicitly. On 2026-10-15 it passed 133/133. This is runtime smoke coverage, not result-parity validation or coverage of every parameter/optional branch.
+- `tests/octave_problem_smoke.m` enumerates all 435 Problem classes, builds the three required Linux MEX modules in a temporary directory, evaluates one in-bounds candidate on every task of all 419 in-scope classes, and attempts constructors for the 16 excluded classes. On 2026-10-16 it passed 419/419 in-scope classes with 0 failures.
+- The same pass found and repaired additional Octave issues: preallocating value-class samples before indexed writes; avoiding empty value-class archive concatenation; replacing four unsupported `split` calls with `strsplit`; representing `Individual_MFPSO` without Octave-incompatible diamond inheritance; preallocating MO-EMaTO-MKT offspring; and creating AMTEA-AD transfer candidates from the current batch's value-class representation. `CORCO` also now initializes its current-diversity state so a short run that skips the learning phase does not read an undefined value. Focused regression cases for these paths are in `tests/octave_smoke.m`.
+- The full Problem sweep also repaired Octave-only catalog blockers: string-object paths in the CEC21, WCCI20-MaTSO, and WCCI20-MaTMO data loaders; four constructors that referenced an undefined `name` argument; and stream arrival generation that used the unavailable `RandStream` class. The arrival helper now saves/restores the global RNG state while generating its private sequence.
 
-This is a pilot smoke suite, **not** a complete run of the algorithm/problem inventory. All
-ten algorithm pilots and all eleven problem pilots have now been exercised, but other
-algorithms, other stream implementations, and the full catalog have not. MATLAB parity cannot
-be checked here.
+The full 435-problem catalog now has maintained runtime coverage: all 419 in-scope classes pass one candidate evaluation per task, while the 16 excluded classes are constructor-accounted. Every algorithm parameter/branch has not been exercised. `octave_smoke.m` is the focused regression suite; `octave_algorithm_smoke.m` and `octave_problem_smoke.m` are the maintained catalog sweeps.
 
 ### A tooling gotcha
 

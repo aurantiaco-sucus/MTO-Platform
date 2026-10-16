@@ -1,7 +1,10 @@
 function arrival = KR_AMTEA_Arrivals(tasks, maxFE, seed)
 % Sample integer FE arrivals using Eq. (21), then shift the earliest arrival to zero.
-% A private random stream reproduces arrivals without consuming the platform RNG.
-stream = RandStream('mt19937ar', 'Seed', seed);
-arrival = randi(stream, maxFE, 1, tasks);
+% Use a save/restore scope under Octave, which has no RandStream class.
+% This keeps arrival generation isolated from the platform RNG state.
+previous = rng();
+cleanup = onCleanup(@() rng(previous)); %#ok<NASGU>
+rng(seed, 'twister');
+arrival = randi(maxFE, 1, tasks);
 arrival = arrival - min(arrival);
 end

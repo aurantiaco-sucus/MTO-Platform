@@ -31,8 +31,8 @@ properties
 end
 
 methods
-    function Prob = MOSCP2(name)
-        Prob = Prob@Problem(name);
+    function Prob = MOSCP2(varargin)
+        Prob = Prob@Problem(varargin{:});
         Prob.maxFE = 1000 * 50 * Prob.Number;
     end
 

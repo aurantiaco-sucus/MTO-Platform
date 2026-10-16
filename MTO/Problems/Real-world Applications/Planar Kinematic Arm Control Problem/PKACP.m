@@ -40,8 +40,8 @@ properties
 end
 
 methods
-    function Prob = PKACP(name)
-        Prob = Prob@Problem(name);
+    function Prob = PKACP(varargin)
+        Prob = Prob@Problem(varargin{:});
         Prob.maxFE = Prob.Ntask * Prob.N * Prob.Gen;
     end
 

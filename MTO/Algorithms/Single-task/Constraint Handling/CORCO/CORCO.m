@@ -49,6 +49,7 @@ methods
             div_delta{t} = 0;
             p = reshape([population{t}.Dec], length(population{t}(1).Dec), length(population{t}))';
             div_init{t} = sum(std(p)) / size(p, 2);
+            div_idx{t} = div_init{t};
             betterRecord1{t} = [];
             betterRecord2{t} = [];
             cor_flag{t} = false;

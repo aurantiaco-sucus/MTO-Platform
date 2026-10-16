@@ -137,3 +137,14 @@ Two traps, both confirmed by testing:
 
 1. The sources open their data through a path **relative to the repo root** (`./Problems/Single-task/CEC17-SO/input_data/M_%d_D%d.txt`), so Octave must run from the directory containing `Problems/`, not from the suite folder.
 2. `fopen` failure is not handled — the code prints an error and then calls `fscanf` on a `NULL` handle, which **segfaults**. Expect a hard crash, not a MATLAB error, if the working directory is wrong.
+
+## Runtime validation
+
+`tests/octave_problem_smoke.m` is the maintained full-catalog runtime check. It discovers all
+435 `Problem` subclasses from the tree, compiles `cec14_func`, `cec17_func`, and
+`cec22_test_func` into a temporary directory, and evaluates one in-bounds candidate on every
+task of each in-scope class. The 16 excluded classes are constructor-accounted but not
+evaluated. Verified on October 16, 2026: **419 passed, 0 failed, 16 excluded**.
+
+The sweep also covers the stream-task problem classes and the data-backed MEX suites. It is a
+load/evaluation smoke check, not a full parameterized benchmark run.

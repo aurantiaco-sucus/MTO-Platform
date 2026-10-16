@@ -61,9 +61,7 @@ methods
             sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             eigenFE{t} = 0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
-            for i = 1:lambda{t}
-                sample{t}(i) = Individual();
-            end
+            sample{t} = repmat(Individual(), 1, lambda{t});
             rank{t} = [];
             ObjHist{t} = [];
         end
