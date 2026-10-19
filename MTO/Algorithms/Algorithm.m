@@ -111,14 +111,23 @@ methods
 
     function [Pop, Flag] = Evaluation(Algo, Pop, Prob, t)
         % Mapping Decision Variables to Real Values
+        Flag = false;
+        if isempty(Pop)
+            % An empty batch evaluates nothing and leaves FE and Best alone.
+            % The early return is also the Octave-compatible form of MATLAB's
+            % empty indexing: there `[](:,1:D)` is 0xD, while Octave errors.
+            % CEDA_MF and other multifactorial algorithms reach this path when
+            % a task receives no offspring in a generation.
+            return;
+        end
         lenPop = length(Pop);
         D = Prob.D(t);
-        Decs = Decs(Pop);
+        PopDec = Decs(Pop);
         % Range scaling: x = Dec * (Ub - Lb) + Lb
-        % Assumes Ub/Lb are row vectors (1xD) and Decs is (NxD)
+        % Assumes Ub/Lb are row vectors (1xD) and PopDec is (NxD)
         Range = Prob.Ub{t} - Prob.Lb{t};
         Lower = Prob.Lb{t};
-        x = Decs(:, 1:D) .* Range + Lower;
+        x = PopDec(:, 1:D) .* Range + Lower;
 
         % Re-evaluate the best solution found so far for noisy problems
         reEvalMode = Prob.ReEvalBest && max(Prob.M) == 1;

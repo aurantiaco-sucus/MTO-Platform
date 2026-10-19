@@ -93,7 +93,7 @@ methods
                     offspring_t(i).MFObj(t) = offspring_t(i).Obj;
                     offspring_t(i).MFCV(t) = offspring_t(i).CV;
                 end
-                offspring_temp = [offspring_temp, offspring_t];
+                offspring_temp = AppendPop(offspring_temp, offspring_t);
             end
             offspring = offspring_temp;
 
@@ -113,7 +113,7 @@ methods
                     arc{t} = subpops{t}(1:arc_len);
                 else
                     arc{t}(1:len) = [];
-                    arc{t} = [arc{t}, TSF];
+                    arc{t} = AppendPop(arc{t}, TSF);
                 end
             end
 

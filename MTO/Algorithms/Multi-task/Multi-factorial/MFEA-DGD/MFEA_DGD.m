@@ -62,7 +62,7 @@ methods
             offspring_temp = repmat(Individual_MF(), 0, 0);
             for t = 1:Prob.T
                 offspring_t = offspring([offspring.MFFactor] == t);
-                offspring_t = [offspring_t, offspring2([offspring2.MFFactor] == t)];
+                offspring_t = AppendPop(offspring_t, offspring2([offspring2.MFFactor] == t));
                 offspring_t = Algo.Evaluation(offspring_t, Prob, t);
                 for i = 1:length(offspring_t)
                     offspring_t(i).MFObj = inf(1, Prob.T);
@@ -70,7 +70,7 @@ methods
                     offspring_t(i).MFObj(t) = offspring_t(i).Obj;
                     offspring_t(i).MFCV(t) = offspring_t(i).CV;
                 end
-                offspring_temp = [offspring_temp, offspring_t];
+                offspring_temp = AppendPop(offspring_temp, offspring_t);
             end
             offspring = offspring_temp;
             % Selection

@@ -6,8 +6,18 @@ for n = 1:size(Niche2, 1)
     for i = 1:size(Niche2, 2)
         %     end
         off_Niche2(i) = Niche2(n, i);
-        A = randperm(size(Niche2, 2), 6);
-        A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3); x4 = A(4);
+        ns = size(Niche2, 2);
+        if ns >= 6
+            A = randperm(ns, 6);
+            A(A == i) = [];
+        else
+            % Same degenerate-niche fallback as Generation1.
+            A = randperm(ns);
+            A(A == i) = [];
+            if isempty(A), A = i; end
+            A = A(mod(0:5, numel(A)) + 1);
+        end
+        x1 = A(1); x2 = A(2); x3 = A(3); x4 = A(4);
         %     x_1= randperm(length(population1), 1);%学习对方全局随机
         x_1 = randperm(size(Niche2, 1), 1); %学习对方有用的小生境随机
 

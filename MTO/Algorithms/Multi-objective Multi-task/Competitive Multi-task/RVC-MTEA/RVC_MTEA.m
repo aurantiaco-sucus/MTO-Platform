@@ -151,7 +151,7 @@ methods
                     CVO = offspring.CV;
                     CVP = CVs(population{t}(P));
                     population{t}(P(find(g_old >= g_new & CVP == CVO | CVP > CVO, Algo.NR))) = offspring;
-                    archive{t} = [archive{t}, offspring];
+                    archive{t} = AppendPop(archive{t}, offspring);
                 end
 
                 if Algo.useDT % Use direct transfer for one solution
@@ -181,7 +181,7 @@ methods
                     replace = find((g_old >= g_new & CVP == candidate.CV) | CVP > candidate.CV, Algo.NR);
                     if ~isempty(replace)
                         population{t}(replace) = candidate;
-                        archive{t} = [archive{t}, candidate];
+                        archive{t} = AppendPop(archive{t}, candidate);
                     end
                 end
             end

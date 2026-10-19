@@ -141,7 +141,7 @@ methods
         [d, pi] = min(Distance', [], 1);
 
         %% Calculate the number of associated solutions except for the last front of each reference point
-        rho = hist(pi(1:N1), 1:NZ);
+        rho = HistCount(pi(1:N1), 1:NZ);
 
         %% Environmental selection
         Choose = false(1, N2);

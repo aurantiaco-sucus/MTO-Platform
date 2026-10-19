@@ -81,11 +81,11 @@ methods
                 population{t} = population{t}(rank(1:Prob.N));
             end
             % DE Strategies Probabilities Updation
-            R_Used(Algo.Gen, :) = hist([DE_Pool{:}], 1:STNum);
+            R_Used(Algo.Gen, :) = HistCount([DE_Pool{:}], 1:STNum);
             pop_all = [population{:}];
             child_idx = [pop_all.isChild] == true;
             DE_Succ = [pop_all(child_idx).ST];
-            R_Succ(Algo.Gen, :) = hist(DE_Succ, 1:STNum);
+            R_Succ(Algo.Gen, :) = HistCount(DE_Succ, 1:STNum);
         end
     end
 

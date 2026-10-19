@@ -323,4 +323,92 @@ assert(ischar(SavedMOData.MTOData.Problems(1).Fnc{1}));
 assert(isfield(SavedMOData.MTOData.Results, 'Dec'));
 delete(MOSavePath);
 
+% Octave compatibility regressions found by the 10-seed reference sweep.
+
+% Octave's hist() returns numel(centers)-by-0 for an empty sample; HistCount
+% keeps MATLAB's one-row shape.
+assert(isequal(HistCount([], 1:3), [0, 0, 0]));
+assert(isequal(HistCount([1, 2, 2], 1:3), [1, 2, 0]));
+
+% Octave 11.3 segfaults on `[empty, empty]` for value classes. AppendPop is
+% the guarded concatenation used by the algorithm accumulators.
+Empty = repmat(Individual(), 0, 0);
+Row = repmat(Individual(), 1, 2);
+assert(isempty(AppendPop(Empty, Empty)));
+assert(isequal(size(AppendPop(Empty, Row)), [1, 2]));
+assert(isequal(size(AppendPop(Row, Empty)), [1, 2]));
+
+% k-means++ start fails when K exceeds the number of distinct points.
+DuplicateData = repmat([0, 0; 1, 1; 2, 2], 4, 1);
+ClusterIndex = KMeansCompat(DuplicateData, 5, 'Distance', 'cityblock', 'MaxIter', 30);
+assert(numel(ClusterIndex) == size(DuplicateData, 1));
+
+% Octave's pca drops numerically rank-deficient components unless economy
+% mode is off; the manifold transfer needs the full D-by-D coefficients.
+RankDeficient = randn(10, 50);
+RankDeficient(:, 2) = RankDeficient(:, 1);
+[Coeff, ~, Latent] = pca(RankDeficient, 'Economy', false);
+assert(isequal(size(Coeff), [50, 50]));
+assert(numel(Latent) == 50);
+
+% An empty evaluation batch is a no-op, not Octave's `[](:,1:D)` error.
+EmptyProb = Func_Sphere();
+EmptyProb.setTasks();
+EmptyAlgo = GA();
+[EmptyOut, EmptyFlag] = EmptyAlgo.Evaluation( ...
+    repmat(Individual(), 0, 0), EmptyProb, 1);
+assert(isempty(EmptyOut) && ~EmptyFlag && EmptyAlgo.FE == 0);
+
+% Realistic-budget runs for the reference-sweep failures: these reach
+% decision paths the low-budget catalog smoke does not.
+rng(1001);
+Prob = CMT1();
+Prob.N = 10;
+Prob.maxFE = 200;
+Algo = MFMP();
+Algo.run(Prob);
+assert(Algo.FE == 200);
+
+rng(1001);
+Prob = CMT1();
+Prob.N = 10;
+Prob.maxFE = 200;
+Algo = CMO_LKT();
+Algo.run(Prob);
+assert(Algo.FE == 200);
+
+rng(1006);
+Prob = CMT1();
+Prob.N = 10;
+Prob.maxFE = 200;
+Algo = CEDA_MF();
+Algo.run(Prob);
+assert(Algo.FE == 200);
+
+rng(55);
+Prob = CMT1();
+Prob.N = 10;
+Prob.maxFE = 200;
+Algo = MTEA_PAE();
+Algo.TGap = 1; % exercise the knowledge-transfer branch
+Algo.run(Prob);
+assert(Algo.FE == 200);
+
+rng(57);
+Prob = CEC17_MTMO1_CI_HS();
+Prob.N = 10;
+Prob.maxFE = 200;
+Algo = MO_MTEA_PAE();
+Algo.TGap = 1;
+Algo.run(Prob);
+assert(Algo.FE == 200);
+
+rng(1003);
+Prob = CEC17_MTMO1_CI_HS();
+Prob.N = 10;
+Prob.maxFE = 200;
+Algo = EMT_MSKT();
+Algo.run(Prob);
+assert(Algo.FE == 200);
+
 fprintf('Octave smoke tests passed.\n');

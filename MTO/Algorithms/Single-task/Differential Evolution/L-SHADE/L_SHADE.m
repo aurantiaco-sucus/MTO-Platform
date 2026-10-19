@@ -101,7 +101,7 @@ methods
                 Hidx{t} = mod(Hidx{t}, Algo.H) + 1;
 
                 % Update archive
-                archive{t} = [archive{t}, population{t}(replace)];
+                archive{t} = AppendPop(archive{t}, population{t}(replace));
                 if length(archive{t}) > round(Algo.A * N)
                     archive{t} = archive{t}(randperm(length(archive{t}), round(Algo.A * N)));
                 end

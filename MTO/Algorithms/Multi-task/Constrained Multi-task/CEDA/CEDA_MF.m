@@ -132,8 +132,8 @@ methods
                     offspring_t2(i).MFObj(t) = offspring_t2(i).Obj;
                     offspring_t2(i).MFCV(t) = offspring_t2(i).CV;
                 end
-                offspring_temp1 = [offspring_temp1, offspring_t1];
-                offspring_temp2 = [offspring_temp2, offspring_t2];
+                offspring_temp1 = AppendPop(offspring_temp1, offspring_t1);
+                offspring_temp2 = AppendPop(offspring_temp2, offspring_t2);
             end
             offspring1 = offspring_temp1;
             offspring2 = offspring_temp2;

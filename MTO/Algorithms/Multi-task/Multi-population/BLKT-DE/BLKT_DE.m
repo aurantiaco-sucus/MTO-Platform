@@ -64,7 +64,7 @@ methods
             for i = 1:size(corre, 1)
                 dimVal = [dimVal; Algo.correDecode(population, corre(i, :), divD)];
             end
-            idx = kmeans(dimVal, divK);
+            idx = KMeansCompat(dimVal, divK);
             subpop = cell(1, divK);
             for i = 1:divK
                 subpop{i} = [];

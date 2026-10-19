@@ -101,7 +101,7 @@ methods
                     population{t} = [population{t}, offspring{t}];
                     temp_p = population{t};
                     [population{t}, Fitness{t}, Next, Fitall{t}] = Selection_SPEA2(population{t}, Prob.N);
-                    archive{t} = [archive{t}, temp_p(~Next)];
+                    archive{t} = AppendPop(archive{t}, temp_p(~Next));
                     if length(archive{t}) > round(2 * length(population{t}))
                         archive{t} = archive{t}(randperm(length(archive{t}), round(2 * length(population{t}))));
                     end

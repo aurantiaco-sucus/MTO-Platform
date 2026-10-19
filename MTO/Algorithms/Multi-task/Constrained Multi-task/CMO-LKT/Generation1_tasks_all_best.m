@@ -5,8 +5,20 @@ for n = 1:size(Niche1, 1)
     gailv1 = rand;
     for i = 1:size(Niche1, 2)
         off_Niche1(i) = Niche1(n, i);
-        A = randperm(size(Niche1, 2), 6);
-        A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3); x4 = A(4); x5 = A(5);
+        ns = size(Niche1, 2);
+        if ns >= 6
+            A = randperm(ns, 6);
+            A(A == i) = [];
+        else
+            % A niche smaller than six members cannot supply the source's
+            % randperm(N/5, 6) draw. Cycle over the members other than i so the
+            % five neighbour slots stay defined; N >= 30 is unaffected.
+            A = randperm(ns);
+            A(A == i) = [];
+            if isempty(A), A = i; end
+            A = A(mod(0:5, numel(A)) + 1);
+        end
+        x1 = A(1); x2 = A(2); x3 = A(3); x4 = A(4); x5 = A(5);
         % x_2= randperm(length(population2), 1);%学习对方全局随机
         x_2 = randperm(size(Niche2, 2), 1); %学习对方有用的小生境随机
 

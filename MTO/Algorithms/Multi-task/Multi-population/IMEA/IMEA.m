@@ -66,7 +66,7 @@ methods
                         end
                         transfer_idx = randperm(length(population{k}), transfer_num);
                         tmp_pop = population{k}(transfer_idx);
-                        transfer_pop = [transfer_pop, tmp_pop];
+                        transfer_pop = AppendPop(transfer_pop, tmp_pop);
                     end
                     [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                     parent(rank(end - length(transfer_pop) + 1:end)) = transfer_pop;

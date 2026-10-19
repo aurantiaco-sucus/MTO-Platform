@@ -257,7 +257,7 @@ methods
 
                 % calculate strategy reward
                 [~, replace_fp] = Selection_Tournament(parent, offspring);
-                is_used = hist([offspring(replace_fp).ST], 1:STNum);
+                is_used = HistCount([offspring(replace_fp).ST], 1:STNum);
                 STRecord{t} = STRecord{t} + is_used;
 
                 % Population Replacement
@@ -292,7 +292,7 @@ methods
                         replace(i) = (flag(1) ~= 1);
                     end
                     if any(replace)
-                        archive{t, ch} = [archive{t, ch}, population{t, ch}(replace)];
+                        archive{t, ch} = AppendPop(archive{t, ch}, population{t, ch}(replace));
                     end
                     if length(archive{t, ch}) > Prob.N
                         archive{t, ch} = archive{t, ch}(randperm(length(archive{t, ch}), Prob.N));

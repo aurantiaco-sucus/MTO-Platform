@@ -95,7 +95,7 @@ methods
                     transfer_temp(j).OriginTask = ot;
                     transfer_temp(j).isTrans = true;
                 end
-                transfer_pop = [transfer_pop, transfer_temp];
+                transfer_pop = AppendPop(transfer_pop, transfer_temp);
             end
             transfer_pop = transfer_pop(1:Algo.G);
         else

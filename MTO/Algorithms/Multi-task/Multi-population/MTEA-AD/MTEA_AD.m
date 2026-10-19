@@ -74,7 +74,7 @@ methods
                         c = Individual();
                         c.Dec = tfsol(i, :);
                         c.Dec = BoundaryClip(c.Dec);
-                        transfer_pop = [transfer_pop, c];
+                        transfer_pop = AppendPop(transfer_pop, c);
                     end
 
                     % Evaluation

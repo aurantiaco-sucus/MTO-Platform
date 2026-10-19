@@ -137,10 +137,34 @@ Verified with GNU Octave 11.3.0 and Forge `statistics` 2.0.0:
 - The bulk `Individual` accessors return all rows when invoked in function form.
 - `tests/octave_algorithm_smoke.m` executes **all 133 in-scope algorithm classes** with family-appropriate low-budget fixtures (single-task Sphere, multi-task CMT1/synthetic Sphere, multi-objective DTLZ1/CEC17 MTMO, and the AMTSO stream suite). Some algorithms require larger populations or budgets than the pilot's `N=10` fixture; the runner records those cases explicitly. On 2026-10-15 it passed 133/133. This is runtime smoke coverage, not result-parity validation or coverage of every parameter/optional branch.
 - `tests/octave_problem_smoke.m` enumerates all 435 Problem classes, builds the three required Linux MEX modules in a temporary directory, evaluates one in-bounds candidate on every task of all 419 in-scope classes, and attempts constructors for the 16 excluded classes. On 2026-10-16 it passed 419/419 in-scope classes with 0 failures.
-- The same pass found and repaired additional Octave issues: preallocating value-class samples before indexed writes; avoiding empty value-class archive concatenation; replacing four unsupported `split` calls with `strsplit`; representing `Individual_MFPSO` without Octave-incompatible diamond inheritance; preallocating MO-EMaTO-MKT offspring; and creating AMTEA-AD transfer candidates from the current batch's value-class representation. `CORCO` also now initializes its current-diversity state so a short run that skips the learning phase does not read an undefined value. Focused regression cases for these paths are in `tests/octave_smoke.m`.
+- The same pass found and repaired additional Octave issues: preallocating value-class samples before indexed writes; avoiding empty value-class archive concatenation; replacing four unsupported `split` calls with `strsplit`; representing `Individual_MFPSO` without Octave-incompatible diamond inheritance; preallocating MO-EMaTO-MKT offspring; and creating AMTEA-AD transfer candidates from the current batch's value-class representation. `CORCO` also now initializes its current-diversity state so a short run that skips the learning phase does not read an undefined value. Focused regression cases for these paths are in `tests/octave_smoke.m`. The general empty-value-class concatenation case was completed on 2026-10-19 (`AppendPop`); see below.
 - The full Problem sweep also repaired Octave-only catalog blockers: string-object paths in the CEC21, WCCI20-MaTSO, and WCCI20-MaTMO data loaders; four constructors that referenced an undefined `name` argument; and stream arrival generation that used the unavailable `RandStream` class. The arrival helper now saves/restores the global RNG state while generating its private sequence.
 
 The full 435-problem catalog now has maintained runtime coverage: all 419 in-scope classes pass one candidate evaluation per task, while the 16 excluded classes are constructor-accounted. Every algorithm parameter/branch has not been exercised. `octave_smoke.m` is the focused regression suite; `octave_algorithm_smoke.m` and `octave_problem_smoke.m` are the maintained catalog sweeps.
+
+### 2026-10-19 — fixes exposed by the 10-seed reference sweep
+
+RustMTO's `tests/reference/octave_behaviour_sweep.m` runs every in-scope
+algorithm for ten seeds at 1000 FE (480 for stream). Ten algorithms crashed
+before these fixes; the causes were Octave semantic differences or latent
+source assumptions, never a change to an RNG algorithm or an operator. The
+sweep now completes **133/133 with 0 failures**; `octave_smoke.m` and
+`octave_algorithm_smoke.m` still pass.
+
+| Algorithms | Finding | Fix |
+| --- | --- | --- |
+| CCEF_ECHT, CEDE_DRL (also latent in VMCH, LSHADE44, MOMFEA-SADE, MFEA-AKT, NSGA-III) | `hist([], centers)` is `numel(centers)`-by-0 in Octave, 1-by-`numel(centers)` in MATLAB, so adding it to a one-row strategy record errors | `HistCount.m` at the counting sites |
+| CEDA_MF and the per-task offspring accumulators | Octave 11.3 **segfaults** on `[emptyClass, emptyClass]`; it also rejects `[](:,1:D)` where MATLAB returns 0-by-D | `AppendPop.m` for the accumulators; `Algorithm.Evaluation` returns a no-op for an empty batch |
+| MTEA_PAE, MO_MTEA_PAE | the local `Decs = lhsdesign(...)` variable masked the `Decs` accessor function | renamed to `PopDec` |
+| EMT_MSKT | Octave `pca` drops numerically rank-deficient components by default (coefficient matrix D-by-r); MATLAB keeps D-by-D, so the two tasks' matrices became nonconformant | `pca(..., 'Economy', false)` |
+| EMaTO_MKT, MO_EMaTO_MKT (also routed through BLKT-DE, TRADE, LDA-MFEA) | Octave's k-means++ start returns an empty `find` when K exceeds the number of distinct points (a converged population) and the centroid assignment errors | `KMeansCompat.m` falls back to the `'sample'` start only in that degenerate case |
+| MFMP | `Selection_Tournament` returns `replace` as a column while `Generation` returns `flag` as a row; implicit expansion made `sum(replace & flag)` a row and the scalar RMP update nonconformant | compare the vectors elementwise (`replace(:)' & flag`) |
+| CMO_LKT | `randperm(N/5, 6)` needs six distinct niche members; the source silently assumes `N >= 30` | small niches cycle over the members other than the slot index; `N >= 30` is unchanged |
+
+The three new helpers are ordinary path functions under `MTO/Algorithms/Utils/`
+(`DataProcess/HistCount.m`, `Individual/AppendPop.m`,
+`Clustering/KMeansCompat.m`), so they are available through the same
+`addpath(genpath(MTO))` the harnesses use.
 
 ### A tooling gotcha
 

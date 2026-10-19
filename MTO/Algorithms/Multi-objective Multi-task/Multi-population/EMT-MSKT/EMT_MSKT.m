@@ -110,8 +110,13 @@ methods
                 ds = d3 - d4;
                 source_mean = Decs(population{k}) - repmat(d4, Prob.N, 1);
                 target_mean = Decs(population{t}) - repmat(d2, Prob.N, 1);
-                [Qs, ~, lamda_s] = pca(source_mean);
-                [Qt, ~, lamda_t] = pca(target_mean);
+                % 'Economy', false keeps every variable's coefficient column.
+                % Octave's pca otherwise drops numerically rank-deficient
+                % components (coeff becomes D-by-r with r = rank(score)), so
+                % the two tasks can return different component counts and
+                % Qs * Qt' becomes nonconformant. MATLAB's pca returns D-by-D.
+                [Qs, ~, lamda_s] = pca(source_mean, 'Economy', false);
+                [Qt, ~, lamda_t] = pca(target_mean, 'Economy', false);
                 alpha = lamda_t(1) / lamda_s(1);
                 sd = alpha * ds * Qs * Qt';
                 vec = sd + d2;

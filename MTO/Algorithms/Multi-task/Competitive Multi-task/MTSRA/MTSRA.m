@@ -137,7 +137,7 @@ methods
             Obj_new = [population{k}.Obj];
 
             % update archive
-            archive{k} = [archive{k}, population{k}(replace)];
+            archive{k} = AppendPop(archive{k}, population{k}(replace));
             % Linear Population Size Reduction
             for t = 1:Prob.T
                 if length(archive{t}) > Prob.N

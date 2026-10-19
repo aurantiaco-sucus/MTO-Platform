@@ -215,7 +215,7 @@ methods
                 Hidx{t} = mod(Hidx{t}, Algo.H) + 1;
 
                 % Update archive
-                archive{t} = [archive{t}, population{t}(replace)];
+                archive{t} = AppendPop(archive{t}, population{t}(replace));
                 if length(archive{t}) > length(population{t})
                     archive{t} = archive{t}(randperm(length(archive{t}), length(population{t})));
                 end
@@ -248,7 +248,7 @@ methods
                 for t = 1:Prob.T
                     [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                     % save to archive
-                    archive{t} = [archive{t}, population{t}(rank(N + 1:end))];
+                    archive{t} = AppendPop(archive{t}, population{t}(rank(N + 1:end)));
                     if length(archive{t}) > Prob.N
                         archive{t} = archive{t}(randperm(length(archive{t}), Prob.N));
                     end

@@ -9,6 +9,6 @@ for taskid = 1:ntask
     task_param = [task_param; evbf];
 end
 [ng] = ddCRP(task_param);
-[gId] = kmeans(task_param, ng);
+[gId] = KMeansCompat(task_param, ng);
 gId = gId';
 end

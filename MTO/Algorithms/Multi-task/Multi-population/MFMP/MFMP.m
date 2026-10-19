@@ -113,7 +113,7 @@ methods
                 Hidx{t} = mod(Hidx{t}, Algo.H) + 1;
 
                 % Update archive
-                archive{t} = [archive{t}, population{t}(replace)];
+                archive{t} = AppendPop(archive{t}, population{t}(replace));
                 if length(archive{t}) > Prob.N
                     archive{t} = archive{t}(randperm(length(archive{t}), Prob.N));
                 end
@@ -128,7 +128,14 @@ methods
                     if sum(flag) == 0
                         RMP(t, Algo.Gen) = min(RMP(t, Algo.Gen - 1) + Algo.C * (1 - SR(t, Algo.Gen)), 1);
                     else
-                        temp = (sum(replace & flag) / sum(flag));
+                        % Selection_Tournament returns replace as an N-by-1
+                        % logical and Generation returns flag as 1-by-N. The
+                        % source's `replace & flag` relies on implicit expansion,
+                        % which makes sum() a row and breaks the scalar RMP
+                        % assignment. Align them elementwise instead: the
+                        % intended quantity is the fraction of successful
+                        % cross-task offspring.
+                        temp = (sum(replace(:)' & flag) / sum(flag));
                         if temp > SR(t, Algo.Gen)
                             RMP(t, Algo.Gen) = min(RMP(t, Algo.Gen - 1) + Algo.C * temp, 1);
                         else
@@ -144,7 +151,7 @@ methods
                 for t = 1:Prob.T
                     [~, rank] = sortrows([CVs(population{t}), Objs(population{t})], [1, 2]);
                     % save to archive
-                    archive{t} = [archive{t}, population{t}(rank(N + 1:end))];
+                    archive{t} = AppendPop(archive{t}, population{t}(rank(N + 1:end)));
                     if length(archive{t}) > Prob.N
                         archive{t} = archive{t}(randperm(length(archive{t}), Prob.N));
                     end

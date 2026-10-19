@@ -138,7 +138,7 @@ methods
                                 population{t}(idx(i)) = s;
                                 flag = true;
                             elseif FrontNo(1) == FrontNo(2)
-                                archive = [archive, s];
+                                archive = AppendPop(archive, s);
                             end
                         end
                         % Update Region

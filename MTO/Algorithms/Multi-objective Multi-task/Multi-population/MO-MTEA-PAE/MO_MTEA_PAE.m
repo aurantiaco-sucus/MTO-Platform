@@ -59,10 +59,10 @@ methods
         Pop = cell(1, Prob.T);
         Fit = cell(1, Prob.T);
         for t = 1:Prob.T
-            Decs = lhsdesign(Prob.N, max(Prob.D));
+            PopDec = lhsdesign(Prob.N, max(Prob.D));
             Pop{t} = repmat(Individual_PAE(), 1, Prob.N);
             for i = 1:Prob.N
-                Pop{t}(i).Dec = Decs(i, :);
+                Pop{t}(i).Dec = PopDec(i, :);
             end
             Pop{t} = Algo.Evaluation(Pop{t}, Prob, t);
             [Pop{t}, Fit{t}] = Selection_SPEA2(Pop{t}, Prob.N);
@@ -179,7 +179,7 @@ methods
                 SuccG(t, 1) = SuccG(t, 1) + sum([Pop{t}.OP] == 1);
                 SuccG(t, 2) = SuccG(t, 2) + sum([Pop{t}.OP] == 2);
 
-                Arc{t} = [Arc{t}, Failed];
+                Arc{t} = AppendPop(Arc{t}, Failed);
                 Arc{t} = Arc{t}(randperm(length(Arc{t}), Prob.N));
             end
         end

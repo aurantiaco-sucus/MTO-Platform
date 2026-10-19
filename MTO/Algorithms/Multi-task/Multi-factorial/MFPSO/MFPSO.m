@@ -71,7 +71,7 @@ methods
             for t = 1:Prob.T
                 population_t = population([population.MFFactor] == t);
                 population_t = Algo.Evaluation(population_t, Prob, t);
-                population_temp = [population_temp, population_t];
+                population_temp = AppendPop(population_temp, population_t);
             end
             population = population_temp;
             % PBest update

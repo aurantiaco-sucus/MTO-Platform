@@ -123,7 +123,7 @@ methods
                     sucParamCount(selParamId, t) = sucParamCount(selParamId, t) + 1;
                 end
                 % Update archive
-                Arc{t} = [Arc{t}, population{t}(replace)];
+                Arc{t} = AppendPop(Arc{t}, population{t}(replace));
                 if length(Arc{t}) > length(population{t})
                     Arc{t} = Arc{t}(randperm(length(Arc{t}), length(population{t})));
                 end

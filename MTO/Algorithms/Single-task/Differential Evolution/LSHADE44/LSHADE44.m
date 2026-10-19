@@ -105,7 +105,7 @@ methods
                 replace = reshape(replace, 1, []);
 
                 % Calculate SF SCR
-                is_used = hist([population{t}(replace).ST], 1:STNum);
+                is_used = HistCount([population{t}(replace).ST], 1:STNum);
                 STRecord{t} = STRecord{t} + is_used;
                 for k = 1:STNum
                     k_idx = [population{t}.ST] == k;
@@ -127,7 +127,7 @@ methods
                     Hidx{t, k} = mod(Hidx{t, k}, Algo.H) + 1;
                 end
 
-                archive{t} = [archive{t}, population{t}(replace)];
+                archive{t} = AppendPop(archive{t}, population{t}(replace));
                 if length(archive{t}) > round(Algo.A * N)
                     archive{t} = archive{t}(randperm(length(archive{t}), round(Algo.A * N)));
                 end

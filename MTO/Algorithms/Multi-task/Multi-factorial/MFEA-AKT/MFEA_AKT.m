@@ -67,7 +67,7 @@ methods
                     offspring_t(i).MFObj = inf(1, Prob.T);
                     offspring_t(i).MFObj(t) = offspring_t(i).Obj;
                 end
-                offspring_temp = [offspring_temp, offspring_t];
+                offspring_temp = AppendPop(offspring_temp, offspring_t);
             end
             offspring = offspring_temp;
 
@@ -92,7 +92,7 @@ methods
                     record_temp = cfb_record(Algo.Gen - Algo.Gap:Algo.Gen - 1);
                 end
                 unique_temp = unique(record_temp);
-                hist_temp = hist(record_temp, unique_temp);
+                hist_temp = HistCount(record_temp, unique_temp);
                 hist_temp(hist_temp == 0) = [];
                 prcfb_count(unique_temp) = prcfb_count(unique_temp) + hist_temp;
                 [max_num, max_idx] = max(prcfb_count);

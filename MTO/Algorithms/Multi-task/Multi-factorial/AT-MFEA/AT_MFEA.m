@@ -65,7 +65,7 @@ methods
                     offspring_t(i).MFObj(t) = offspring_t(i).Obj;
                     offspring_t(i).MFCV(t) = offspring_t(i).CV;
                 end
-                offspring_temp = [offspring_temp, offspring_t];
+                offspring_temp = AppendPop(offspring_temp, offspring_t);
             end
             offspring = offspring_temp;
             % Selection

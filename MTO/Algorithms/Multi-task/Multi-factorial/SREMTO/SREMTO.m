@@ -76,7 +76,7 @@ methods
                 parent = repmat(Individual_SRE(), 0, 0);
                 for i = 1:length(population)
                     if population(i).MFRank(t) <= Prob.N
-                        parent = [parent, population(i)];
+                        parent = AppendPop(parent, population(i));
                     end
                 end
 

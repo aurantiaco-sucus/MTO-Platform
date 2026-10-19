@@ -226,7 +226,7 @@ methods
                 weight{t}(weight{t} < 0.01) = 0.01;
 
                 % Calculate SF SCR
-                is_used = hist([population{t}(replace).ST], 1:STnum);
+                is_used = HistCount([population{t}(replace).ST], 1:STnum);
                 STRecord{t} = STRecord{t} + is_used;
                 for k = 1:STnum
                     k_idx = [population{t}.ST] == k;
@@ -248,7 +248,7 @@ methods
                     Hidx{t, k} = mod(Hidx{t, k}, Algo.H) + 1;
                 end
 
-                archive{t} = [archive{t}, population{t}(replace)];
+                archive{t} = AppendPop(archive{t}, population{t}(replace));
                 if length(archive{t}) > round(Algo.A * N)
                     archive{t} = archive{t}(randperm(length(archive{t}), round(Algo.A * N)));
                 end

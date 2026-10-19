@@ -63,7 +63,7 @@ methods
             for t = 1:Prob.T
                 if Algo.Gen > 2
                     % Clustering to reduce data size
-                    [~, P{t}] = kmeans(P{t}, Algo.K);
+                    [~, P{t}] = KMeansCompat(P{t}, Algo.K);
                 end
                 % Accumulate all historical points of t and sort according to objective
                 temp = [P{t}; [subpops(t).data, f(t).cost]];
@@ -85,7 +85,7 @@ methods
                     offspring_t(i).MFObj(t) = offspring_t(i).Obj;
                     offspring_t(i).MFCV(t) = offspring_t(i).CV;
                 end
-                offspring_temp = [offspring_temp, offspring_t];
+                offspring_temp = AppendPop(offspring_temp, offspring_t);
             end
             offspring = offspring_temp;
             % Selection

@@ -81,7 +81,7 @@ methods
                 end
 
                 % Update archive
-                archive{t} = [archive{t}, population{t}(replace)];
+                archive{t} = AppendPop(archive{t}, population{t}(replace));
                 if length(archive{t}) > length(population{t})
                     archive{t} = archive{t}(randperm(length(archive{t}), length(population{t})));
                 end

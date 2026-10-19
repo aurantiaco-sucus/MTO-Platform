@@ -58,10 +58,10 @@ methods
         SegGap = fix(Prob.maxFE / (Prob.T * Prob.N * Algo.Seg));
         Pop = cell(1, Prob.T);
         for t = 1:Prob.T
-            Decs = lhsdesign(Prob.N, max(Prob.D));
+            PopDec = lhsdesign(Prob.N, max(Prob.D));
             Pop{t} = repmat(Individual_PAE(), 1, Prob.N);
             for i = 1:Prob.N
-                Pop{t}(i).Dec = Decs(i, :);
+                Pop{t}(i).Dec = PopDec(i, :);
             end
             Pop{t} = Algo.Evaluation(Pop{t}, Prob, t);
             [~, rank] = sortrows([CVs(Pop{t}), Objs(Pop{t})], [1, 2]);
@@ -87,7 +87,7 @@ methods
                 for t = 1:Prob.T
                     [~, rank] = sortrows([CVs(DisPop{t}), Objs(DisPop{t})], [1, 2]);
                     DisPop{t} = DisPop{t}(rank);
-                    Arc{t} = [Arc{t}, Pop{t}];
+                    Arc{t} = AppendPop(Arc{t}, Pop{t});
                     [~, rank] = sortrows([CVs(Arc{t}), Objs(Arc{t})], [1, 2]);
                     Arc{t} = Arc{t}(rank);
                 end
@@ -172,7 +172,7 @@ methods
                 SuccG(t, 1) = SuccG(t, 1) + sum([Pop{t}.OP] == 1);
                 SuccG(t, 2) = SuccG(t, 2) + sum([Pop{t}.OP] == 2);
 
-                Arc{t} = [Arc{t}, Failed];
+                Arc{t} = AppendPop(Arc{t}, Failed);
                 Arc{t} = Arc{t}(randperm(length(Arc{t}), Prob.N));
             end
 

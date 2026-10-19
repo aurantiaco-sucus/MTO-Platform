@@ -149,7 +149,7 @@ methods
                 Selected_population = population{index(j)};
                 SubpopRnvec = [SubpopRnvec; Decs(Selected_population)];
             end
-            [idx, ~] = kmeans(SubpopRnvec, K, 'Distance', 'cityblock', 'MaxIter', 30);
+            [idx, ~] = KMeansCompat(SubpopRnvec, K, 'Distance', 'cityblock', 'MaxIter', 30);
             for ii = 1:length(Subpop)
                 Subpop(ii).ClusterNum = idx(ii);
             end

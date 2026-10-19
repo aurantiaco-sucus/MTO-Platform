@@ -100,7 +100,7 @@ methods
                             c = Individual();
                             c.Dec = [inject(i, :), rand(1, max(Prob.D) - Prob.D(t))];
                             c.Dec = BoundaryClip(c.Dec);
-                            inject_pop = [inject_pop, c];
+                            inject_pop = AppendPop(inject_pop, c);
                         end
                     end
                     replace_idx = randperm(length(offspring), length(inject_pop));

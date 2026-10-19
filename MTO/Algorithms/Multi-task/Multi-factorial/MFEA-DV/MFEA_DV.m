@@ -61,7 +61,7 @@ methods
                     offspring_t(i).MFObj(t) = offspring_t(i).Obj;
                     offspring_t(i).MFCV(t) = offspring_t(i).CV;
                 end
-                offspring_temp = [offspring_temp, offspring_t];
+                offspring_temp = AppendPop(offspring_temp, offspring_t);
             end
             offspring = offspring_temp;
             % Selection
@@ -105,7 +105,7 @@ methods
                 c_pbest = pbest_idx{population(x2).MFFactor}(i);
                 offspring_tt.Dec = population(pbest).Dec + population(x2).Dec - population(c_pbest).Dec;
                 offspring_tt.MFFactor = population(i).MFFactor;
-                pbest_pop = [pbest_pop, offspring_tt];
+                pbest_pop = AppendPop(pbest_pop, offspring_tt);
             end
         end
         population = [population, pbest_pop];
